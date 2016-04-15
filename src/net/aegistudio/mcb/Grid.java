@@ -1,6 +1,7 @@
 package net.aegistudio.mcb;
 
 import java.io.InputStream;
+import java.io.OutputStream;
 
 import net.aegistudio.mpp.algo.Paintable;
 
@@ -11,7 +12,7 @@ public interface Grid {
 	
 	public void load(InputStream inputStream) throws Exception;
 
-	public void paint(Paintable paintable);
+	public void save(OutputStream outputStream) throws Exception;
 	
-	public void save(InputStream outputStream) throws Exception;
+	public void paint(Paintable paintable);
 }

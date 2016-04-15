@@ -1,10 +1,8 @@
 package net.aegistudio.mcb.layout;
 
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayDeque;
-
-import javax.swing.JFrame;
-import javax.swing.UIManager;
 
 import net.aegistudio.mcb.Air;
 import net.aegistudio.mcb.Cell;
@@ -12,7 +10,6 @@ import net.aegistudio.mcb.CellPaintable;
 import net.aegistudio.mcb.Component;
 import net.aegistudio.mcb.Facing;
 import net.aegistudio.mcb.Grid;
-import net.aegistudio.mcb.stdaln.AwtGridComponent;
 import net.aegistudio.mcb.unit.Unit;
 import net.aegistudio.mcb.wire.Wire;
 import net.aegistudio.mpp.algo.Paintable;
@@ -71,14 +68,39 @@ public class LayoutGrid implements Grid {
 			component.init(this.layout[row][column]);
 	}
 
+	public static final Integer END_GRID = 255;
 	@Override
 	public void load(InputStream inputStream) throws Exception {
-		                                      
+		while(true) {
+			int row = inputStream.read();
+			if(row == END_GRID) break;
+			int column = inputStream.read();
+			Cell cell = inputStream.read() != 0? 
+					new LayoutWireCell(this, null, row, column): 
+					new LayoutUnitCell(this, null, row, column);
+			cell.load(inputStream);
+			this.layout[row][column] = cell;
+		}
+		
+		all((r, c, cell, comp) -> {
+			if(cell != null && cell instanceof LayoutUnitCell)
+				Facing.all(face -> plantUnit((LayoutUnitCell) cell, face));
+		});
 	}
 
 	@Override
-	public void save(InputStream outputStream) throws Exception {
-	
+	public void save(OutputStream outputStream) throws Exception {
+		for(int r = 0; r < 32; r ++) 
+			for(int c = 0; c < 32; c ++) {
+				Cell current = this.getCell(r, c);
+				if(current != null) {
+					outputStream.write(current.getRow());
+					outputStream.write(current.getColumn());
+					outputStream.write(current instanceof LayoutWireCell? 1 : 0);
+					current.save(outputStream);
+				}
+			}
+		outputStream.write(END_GRID);
 	}
 	
 	void plantWire(LayoutWireCell wire, Facing direction) {
@@ -184,21 +206,5 @@ public class LayoutGrid implements Grid {
 				});
 			}
 		}
-	}
-	
-	public static void main(String[] arguments) {
-		try {UIManager.setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");} catch(Exception e) {}
-		LayoutGrid layout = new LayoutGrid();
-		JFrame frame = new JFrame("Layout");
-		frame.setLayout(null);
-		frame.setResizable(false);
-		
-		AwtGridComponent component = new AwtGridComponent(layout);
-		component.setLocation(0, 0);
-		frame.add(component);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		
-		frame.setSize(component.getWidth(), component.getHeight());
-		frame.setVisible(true);
 	}
 }
