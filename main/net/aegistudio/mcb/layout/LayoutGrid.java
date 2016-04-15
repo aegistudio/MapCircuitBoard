@@ -141,6 +141,7 @@ public class LayoutGrid implements Grid {
 			LayoutUnitCell unit, Facing port, Facing face) {
 		
 		short distance = (short) Math.min(source.getComponent().distance(face)
+				+ destination.getComponent().distance(face.opposite())
 				+ source.getDistance(unit, port), Short.MAX_VALUE);
 		if(distance == Short.MAX_VALUE) return false;
 		if(distance < destination.getDistance(unit, port)) {
@@ -153,7 +154,8 @@ public class LayoutGrid implements Grid {
 	void plantUnit(LayoutUnitCell unit, Facing port) {
 		this.bfTraverse(unit, port, (current, next, face) -> {
 			if(current == null) {
-				next.setDistance(unit, port, (short)1);
+				next.setDistance(unit, port, (short) Math.min(1 + next.getComponent()
+						.distance(face.opposite()), Short.MAX_VALUE));
 				return true;
 			}
 			else return updateDistance(current, next, 

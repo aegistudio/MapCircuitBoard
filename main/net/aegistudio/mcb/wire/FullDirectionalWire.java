@@ -35,7 +35,7 @@ public class FullDirectionalWire implements Wire {
 	@Override
 	public void paint(Cell cell, Paintable paintable) {
 		paintable.color(new Color(0.4f + 0.6f * cell
-				.getLevel(Facing.NORTH) / 16.0f, 0.0f, 0.0f));
+				.getLevel(Facing.NORTH) / 32.0f, 0.0f, 0.0f));
 		
 		paintable.set(1, 1);		paintable.set(1, 2);
 		paintable.set(2, 1);		paintable.set(2, 2);
