@@ -59,7 +59,7 @@ public class Torch implements Unit {
 		for(Facing face : Facing.values()) {
 			if(face == inputSide)
 				cell.setLevel(inputSide, 0);
-			else cell.setLevel(face, level != 0? 0 : 16);
+			else cell.setLevel(face, level != 0? 0 : 32);
 		}
 	}
 }
