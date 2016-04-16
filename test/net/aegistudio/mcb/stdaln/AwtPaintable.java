@@ -32,12 +32,12 @@ public class AwtPaintable implements Paintable {
 
 	@Override
 	public int height() {
-		return size * 4 * 32;
+		return size * 128;
 	}
 
 	@Override
 	public int width() {
-		return size * 4 * 32;
+		return size * 128;
 	}
 	
 	int size = 5;
@@ -47,6 +47,6 @@ public class AwtPaintable implements Paintable {
 	
 	@Override
 	public void set(int x, int y) {
-		g.fillRect(size * x, size * y, size, size);
+		g.fillRect(size * x, size * (127 - y), size, size);
 	}
 }

@@ -24,7 +24,7 @@ public class AwtGridComponent extends Component{
 	
 	public void manipulate(Point location, Manipulator manipulator) {
 		int x = (int) (location.getX() / paintable.size);
-		int y = (int) (location.getY() / paintable.size);
+		int y = 127 - (int) (location.getY() / paintable.size);
 		Cell cell = grid.getCell(y / 4, x / 4);
 		manipulator.manipulate(x, y, cell);
 	}

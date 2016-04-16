@@ -60,7 +60,7 @@ public class LayoutGridEditor extends AwtGridComponent {
 							textBuilder.append("LayoutWire: "); 
 							String name = cell.getComponent().getClass().getTypeName();
 							textBuilder.append(name.substring(1 + name.lastIndexOf('.')));
-							textBuilder.append(" (" + cell.getRow() + ", " + cell.getColumn() + ")");
+							textBuilder.append(" (" + cell.getColumn() + ", " + cell.getRow() + ")");
 							LayoutWireCell wire = (LayoutWireCell) cell;
 							for(LayoutUnitCell adjacence : wire.allAdjacentUnit()) {
 								textBuilder.append("\n");
@@ -70,7 +70,7 @@ public class LayoutGridEditor extends AwtGridComponent {
 									textBuilder.append(distance == Short.MAX_VALUE? "N" : distance);
 									textBuilder.append(' ');
 								}
-								textBuilder.append("-> (" + adjacence.getRow() + ", " + adjacence.getColumn() + ")");
+								textBuilder.append("-> (" + adjacence.getColumn() + ", " + adjacence.getRow() + ")");
 							}
 							
 							text = new String(textBuilder);
@@ -80,7 +80,7 @@ public class LayoutGridEditor extends AwtGridComponent {
 							textBuilder.append("LayoutUnit: ");
 							String name = cell.getComponent().getClass().getTypeName();
 							textBuilder.append(name.substring(1 + name.lastIndexOf('.')));
-							textBuilder.append(" (" + cell.getRow() + ", " + cell.getColumn() + ")");
+							textBuilder.append(" (" + cell.getColumn() + ", " + cell.getRow() + ")");
 							Object data = cell.getData(Cloneable.class);
 							if(data != null) {
 								textBuilder.append("\n");
@@ -120,7 +120,8 @@ public class LayoutGridEditor extends AwtGridComponent {
 		gridComponent = newComponent;
 		gridComponent.setLocation(0, 0);
 		frame.add(gridComponent);
-		frame.setSize(gridComponent.getWidth(), gridComponent.getHeight());
+		frame.setSize(gridComponent.getWidth(), gridComponent.getHeight() 
+				+ frame.getJMenuBar().getPreferredSize().height);
 		frame.repaint();
 	}
 	
@@ -131,8 +132,6 @@ public class LayoutGridEditor extends AwtGridComponent {
 		frame.setResizable(false);
 		frame.setLocationRelativeTo(null);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		
-		resetGridComponent(frame, new LayoutGridEditor(new LayoutGrid()));
 		
 		JMenuBar menubar = new JMenuBar();
 		frame.setJMenuBar(menubar);
@@ -223,6 +222,8 @@ public class LayoutGridEditor extends AwtGridComponent {
 		});
 		help.add(about);
 		menubar.add(help);
+		
+		resetGridComponent(frame, new LayoutGridEditor(new LayoutGrid()));
 		
 		frame.setVisible(true);
 	}
