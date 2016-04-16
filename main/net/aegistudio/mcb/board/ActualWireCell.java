@@ -16,7 +16,7 @@ public class ActualWireCell extends AbstractCell<ActualGrid, Wire> {
 		super.component = this.wireCell.getComponent();
 	}
 	
-	// Using lazy evalutaion, otherwise unable to emulate massive circuit!
+	// Using lazy evaluation, otherwise unable to emulate massive circuit!
 	public int getLevel(Facing f) {
 		if(super.getLevel(f) >= Short.MAX_VALUE) {
 			super.setLevel(f, 0);

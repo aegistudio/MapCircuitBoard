@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -95,6 +96,9 @@ public class ActualGridEmulator extends AwtGridComponent {
 		grid.paint(paintable);
 		repaint();
 	}
+	
+	static int interval = 10;
+	static Thread tickThread;
 	
 	public static void main(String[] arguments) {
 		try {UIManager.setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");} catch(Exception e) {}
@@ -217,6 +221,33 @@ public class ActualGridEmulator extends AwtGridComponent {
 		file.add(saveFile);
 		saveFile.setAccelerator(KeyStroke.getKeyStroke("ctrl S"));
 		menubar.add(file);
+		
+		JMenu emulation = new JMenu("Emulation");
+		JCheckBoxMenuItem autoTick = new JCheckBoxMenuItem("Automatically Tick");
+		autoTick.addActionListener((a) -> {
+			if(tickThread == null) {
+				tickThread = new Thread(() -> {
+					while(true) try {
+						if(gridComponent != null) 
+							gridComponent.tick();
+						frame.repaint();
+						Thread.sleep(interval);
+					}
+					catch(InterruptedException e) {
+						break;
+					}
+					catch(Exception e) {	e.printStackTrace();	}
+				});
+				tickThread.start();
+			}
+			else {
+				tickThread.interrupt();
+				tickThread = null;
+			}
+		});
+		autoTick.setAccelerator(KeyStroke.getKeyStroke("F5"));
+		emulation.add(autoTick);
+		menubar.add(emulation);
 		
 		JMenu help = new JMenu("Help");
 		JMenuItem instruction = new JMenuItem("Instruction");
