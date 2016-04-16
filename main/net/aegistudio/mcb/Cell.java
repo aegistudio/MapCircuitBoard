@@ -63,12 +63,12 @@ public interface Cell {
 	/**
 	 * @param input
 	 */
-	public void load(InputStream input) throws Exception;
+	public void load(InputStream input, ComponentFactory table) throws Exception;
 	
 	/**
 	 * @param output
 	 */
-	public void save(OutputStream output) throws Exception;
+	public void save(OutputStream output, ComponentFactory table) throws Exception;
 	
 	/**
 	 * When the cell ticks.

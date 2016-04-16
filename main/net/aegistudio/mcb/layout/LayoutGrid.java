@@ -6,6 +6,7 @@ import java.util.ArrayDeque;
 import net.aegistudio.mcb.Air;
 import net.aegistudio.mcb.Cell;
 import net.aegistudio.mcb.Component;
+import net.aegistudio.mcb.ComponentFactory;
 import net.aegistudio.mcb.Facing;
 import net.aegistudio.mcb.AbstractGrid;
 import net.aegistudio.mcb.unit.Unit;
@@ -57,8 +58,8 @@ public class LayoutGrid extends AbstractGrid {
 	}
 	
 	@Override
-	public void load(InputStream inputStream) throws Exception {
-		super.load(inputStream);
+	public void load(InputStream inputStream, ComponentFactory table) throws Exception {
+		super.load(inputStream, table);
 		all((r, c, cell, comp) -> {
 			if(cell != null && cell instanceof LayoutUnitCell)
 				Facing.all(face -> plantUnit((LayoutUnitCell) cell, face));

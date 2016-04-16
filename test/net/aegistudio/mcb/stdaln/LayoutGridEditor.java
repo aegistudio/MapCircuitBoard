@@ -98,8 +98,8 @@ public class LayoutGridEditor extends AwtGridComponent {
 		
 		this.addMouseWheelListener((MouseWheelEvent e) -> {
 			int rotation = e.getWheelRotation();
-			List<net.aegistudio.mcb.Component> components = ComponentFactory.all();
-			this.tool(ComponentFactory.get((ComponentFactory.id(component) 
+			List<net.aegistudio.mcb.Component> components = table.all();
+			this.tool(table.get((table.id(component) 
 					+ (rotation > 0? 1 : components.size() - 1)) % components.size()));
 			currentX = e.getX();
 			currentY = e.getY();
@@ -116,6 +116,7 @@ public class LayoutGridEditor extends AwtGridComponent {
 	}
 	
 	static LayoutGridEditor gridComponent;
+	static ComponentFactory table = new ComponentFactory();
 	static void resetGridComponent(JFrame frame, LayoutGridEditor newComponent) {
 		if(gridComponent != null) frame.remove(gridComponent);
 		gridComponent = newComponent;
@@ -164,7 +165,7 @@ public class LayoutGridEditor extends AwtGridComponent {
 		openFile.addActionListener(a -> {
 			if(JFileChooser.APPROVE_OPTION == chooser.showOpenDialog(frame)) try {
 				FileInputStream input = new FileInputStream(chooser.getSelectedFile());
-				LayoutGrid grid = new LayoutGrid();	grid.load(input);
+				LayoutGrid grid = new LayoutGrid();	grid.load(input, table);
 				resetGridComponent(frame, new LayoutGridEditor(grid));
 			}
 			catch(Exception e) {
@@ -189,7 +190,7 @@ public class LayoutGridEditor extends AwtGridComponent {
 							!= JOptionPane.YES_OPTION) return;
 				}
 				FileOutputStream output = new FileOutputStream(save);
-				gridComponent.grid.save(output);
+				gridComponent.grid.save(output, table);
 			}
 			catch(Exception e) {
 				JOptionPane.showMessageDialog(frame, e.getMessage(), 

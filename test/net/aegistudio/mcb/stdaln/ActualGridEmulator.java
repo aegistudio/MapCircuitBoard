@@ -17,6 +17,7 @@ import javax.swing.KeyStroke;
 import javax.swing.UIManager;
 import javax.swing.filechooser.FileFilter;
 
+import net.aegistudio.mcb.ComponentFactory;
 import net.aegistudio.mcb.Data;
 import net.aegistudio.mcb.Facing;
 import net.aegistudio.mcb.board.ActualGrid;
@@ -74,6 +75,7 @@ public class ActualGridEmulator extends AwtGridComponent {
 	}
 	
 	static ActualGridEmulator gridComponent;
+	static ComponentFactory table = new ComponentFactory();
 	static void resetGridComponent(JFrame frame, ActualGridEmulator newComponent) {
 		if(gridComponent != null) frame.remove(gridComponent);
 		gridComponent = newComponent;
@@ -138,7 +140,7 @@ public class ActualGridEmulator extends AwtGridComponent {
 		openFile.addActionListener(a -> {
 			if(JFileChooser.APPROVE_OPTION == chooser.showOpenDialog(frame)) try {
 				FileInputStream input = new FileInputStream(chooser.getSelectedFile());
-				LayoutGrid grid = new LayoutGrid();	grid.load(input);
+				LayoutGrid grid = new LayoutGrid();	grid.load(input, table);
 				ActualGrid actualGrid = new ActualGrid(grid);
 				resetGridComponent(frame, new ActualGridEmulator(actualGrid));
 			}

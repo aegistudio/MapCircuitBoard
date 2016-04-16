@@ -30,13 +30,13 @@ public abstract class AbstractGrid implements Grid {
 
 	public static final Integer END_GRID = 255;
 	@Override
-	public void load(InputStream inputStream) throws Exception {
+	public void load(InputStream inputStream, ComponentFactory table) throws Exception {
 		while(true) {
 			int row = inputStream.read();
 			if(row == END_GRID) break;
 			int column = inputStream.read();
 			Cell cell = decode(inputStream.read(), row, column);
-			cell.load(inputStream);
+			cell.load(inputStream, table);
 			this.cells[row][column] = cell;
 		}
 	}
@@ -45,7 +45,7 @@ public abstract class AbstractGrid implements Grid {
 	protected abstract int encode(Cell cell);
 	
 	@Override
-	public void save(OutputStream outputStream) throws Exception {
+	public void save(OutputStream outputStream, ComponentFactory table) throws Exception {
 		for(int r = 0; r < 32; r ++) 
 			for(int c = 0; c < 32; c ++) {
 				Cell current = this.getCell(r, c);
@@ -53,7 +53,7 @@ public abstract class AbstractGrid implements Grid {
 					outputStream.write(current.getRow());
 					outputStream.write(current.getColumn());
 					outputStream.write(encode(current));
-					current.save(outputStream);
+					current.save(outputStream, table);
 				}
 			}
 		outputStream.write(END_GRID);

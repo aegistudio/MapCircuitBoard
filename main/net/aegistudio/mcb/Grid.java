@@ -10,9 +10,9 @@ public interface Grid {
 	
 	public void setCell(int row, int column, Component component);
 	
-	public void load(InputStream inputStream) throws Exception;
+	public void load(InputStream inputStream, ComponentFactory table) throws Exception;
 
-	public void save(OutputStream outputStream) throws Exception;
+	public void save(OutputStream outputStream, ComponentFactory table) throws Exception;
 	
 	public void paint(Paintable paintable);
 	

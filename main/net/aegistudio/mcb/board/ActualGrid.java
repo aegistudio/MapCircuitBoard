@@ -15,9 +15,15 @@ public class ActualGrid extends AbstractGrid {
 	public ActualGrid(LayoutGrid layout) {
 		this.layout = layout;
 		this.layout.all((r, c, cell, component) -> setCell(r, c, cell));
-		
-		this.layout.observers.add(
-				(r, c, previous, current) -> setCell(r, c, current));
+	}
+	
+	private AbstractGrid.CellObserver observer = (r, c, previous, current) -> setCell(r, c, current);
+	public void add() {
+		this.layout.observers.add(observer);
+	}
+	
+	public void remove() {
+		this.layout.observers.remove(observer);
 	}
 	
 	void setCell(int r, int c, Cell cell) {
@@ -42,8 +48,7 @@ public class ActualGrid extends AbstractGrid {
 
 	@Override
 	protected Cell decode(int code, int row, int column) {
-		return code != 0? new ActualUnitCell(this, (LayoutUnitCell) layout.getCell(row, column)) 
-				: new ActualWireCell(this, (LayoutWireCell)layout.getCell(row, column));
+		return super.getCell(row, column);
 	}
 
 	@Override

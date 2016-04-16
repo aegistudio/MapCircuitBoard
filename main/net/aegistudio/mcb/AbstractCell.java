@@ -37,14 +37,14 @@ public abstract class AbstractCell<G extends Grid, C extends Component> implemen
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public void load(InputStream input) throws Exception {
-		this.component = (C) ComponentFactory.get(input.read());
+	public void load(InputStream input, ComponentFactory table) throws Exception {
+		this.component = (C) table.get(input.read());
 		this.component.load(this, input);
 	}
 
 	@Override
-	public void save(OutputStream output) throws Exception {
-		output.write(ComponentFactory.id(component));
+	public void save(OutputStream output, ComponentFactory table) throws Exception {
+		output.write(table.id(component));
 		component.save(this, output);
 	}
 	
