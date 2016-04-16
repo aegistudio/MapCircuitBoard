@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import net.aegistudio.mcb.AbstractCell;
+import net.aegistudio.mcb.ComponentFactory;
 import net.aegistudio.mcb.Data;
 import net.aegistudio.mcb.Facing;
 import net.aegistudio.mcb.layout.LayoutUnitCell;
@@ -21,12 +22,12 @@ public class ActualUnitCell extends AbstractCell<ActualGrid, Unit> {
 		else this.setData(null);
 	}
 	
-	public void load(InputStream inputStream) throws Exception {
+	public void load(InputStream inputStream, ComponentFactory factory) throws Exception {
 		DataInputStream din = new DataInputStream(inputStream);
 		for(Facing f : Facing.values()) super.setLevel(f, din.readInt());
 	}
 	
-	public void save(OutputStream outputStream) throws Exception {
+	public void save(OutputStream outputStream, ComponentFactory factory) throws Exception {
 		DataOutputStream dout = new DataOutputStream(outputStream);
 		for(Facing f : Facing.values()) dout.writeInt(super.getLevel(f));
 	}

@@ -6,9 +6,11 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -75,9 +77,11 @@ public class ActualGridEmulator extends AwtGridComponent {
 	}
 	
 	static ActualGridEmulator gridComponent;
+	static JLabel noEmulation;
 	static ComponentFactory table = new ComponentFactory();
 	static void resetGridComponent(JFrame frame, ActualGridEmulator newComponent) {
 		if(gridComponent != null) frame.remove(gridComponent);
+		else frame.remove(noEmulation);
 		gridComponent = newComponent;
 		gridComponent.setLocation(0, 0);
 		frame.add(gridComponent);
@@ -121,8 +125,8 @@ public class ActualGridEmulator extends AwtGridComponent {
 		frame.setJMenuBar(menubar);
 		
 		JMenu file = new JMenu("File");
-		JFileChooser chooser = new JFileChooser(); {
-			chooser.setFileFilter(new FileFilter() {
+		JFileChooser layoutChooser = new JFileChooser(); {
+			layoutChooser.setFileFilter(new FileFilter() {
 				@Override
 				public boolean accept(File arg0) {
 					if(arg0.isDirectory()) return true;
@@ -136,10 +140,10 @@ public class ActualGridEmulator extends AwtGridComponent {
 			});
 		}
 		
-		JMenuItem openFile = new JMenuItem("New Emulation");
-		openFile.addActionListener(a -> {
-			if(JFileChooser.APPROVE_OPTION == chooser.showOpenDialog(frame)) try {
-				FileInputStream input = new FileInputStream(chooser.getSelectedFile());
+		JMenuItem newEmulation = new JMenuItem("New Emulation");
+		newEmulation.addActionListener(a -> {
+			if(JFileChooser.APPROVE_OPTION == layoutChooser.showOpenDialog(frame)) try {
+				FileInputStream input = new FileInputStream(layoutChooser.getSelectedFile());
 				LayoutGrid grid = new LayoutGrid();	grid.load(input, table);
 				ActualGrid actualGrid = new ActualGrid(grid);
 				resetGridComponent(frame, new ActualGridEmulator(actualGrid));
@@ -149,15 +153,51 @@ public class ActualGridEmulator extends AwtGridComponent {
 						"Fail to open layout!", JOptionPane.ERROR_MESSAGE);
 			}
 		});
+		file.add(newEmulation);
+		
+		file.addSeparator();
+		JFileChooser chooser = new JFileChooser(); {
+			chooser.setFileFilter(new FileFilter() {
+				@Override
+				public boolean accept(File arg0) {
+					if(arg0.isDirectory()) return true;
+					return arg0.getName().endsWith(".emu");
+				}
+
+				@Override
+				public String getDescription() {
+					return "Emulation File (*.emu)";
+				}
+			});
+		}
+		
+		JMenuItem openFile = new JMenuItem("Open Layout");
+		openFile.addActionListener(a -> {
+			if(JFileChooser.APPROVE_OPTION == chooser.showOpenDialog(frame)) try {
+				FileInputStream input = new FileInputStream(chooser.getSelectedFile());
+				
+				LayoutGrid grid = new LayoutGrid();
+				grid.load(input, table);
+				
+				ActualGrid actualGrid = new ActualGrid(grid);
+				actualGrid.load(input, table);
+				
+				resetGridComponent(frame, new ActualGridEmulator(actualGrid));
+			}
+			catch(Exception e) {
+				JOptionPane.showMessageDialog(frame, e.getMessage(), 
+						"Fail to open!", JOptionPane.ERROR_MESSAGE);
+			}
+		});
 		openFile.setAccelerator(KeyStroke.getKeyStroke("ctrl O"));
 		file.add(openFile);
-		/*
+		
 		JMenuItem saveFile = new JMenuItem("Save Layout");
 		saveFile.addActionListener(a -> {
 			if(JFileChooser.APPROVE_OPTION == chooser.showSaveDialog(frame)) try {
 				File save = chooser.getSelectedFile();
-				if(!save.getName().endsWith(".lyt")) {
-					save = new File(save.getParentFile(), save.getName().concat(".lyt"));
+				if(!save.getName().endsWith(".emu")) {
+					save = new File(save.getParentFile(), save.getName().concat(".emu"));
 					chooser.setSelectedFile(save);
 				}
 				
@@ -166,7 +206,8 @@ public class ActualGridEmulator extends AwtGridComponent {
 							!= JOptionPane.YES_OPTION) return;
 				}
 				FileOutputStream output = new FileOutputStream(save);
-				gridComponent.grid.save(output);
+				((ActualGrid)gridComponent.grid).layout.save(output, table);
+				gridComponent.grid.save(output, table);
 			}
 			catch(Exception e) {
 				JOptionPane.showMessageDialog(frame, e.getMessage(), 
@@ -175,7 +216,6 @@ public class ActualGridEmulator extends AwtGridComponent {
 		});
 		file.add(saveFile);
 		saveFile.setAccelerator(KeyStroke.getKeyStroke("ctrl S"));
-				*/
 		menubar.add(file);
 		
 		JMenu help = new JMenu("Help");
@@ -201,8 +241,13 @@ public class ActualGridEmulator extends AwtGridComponent {
 		});
 		help.add(about);
 		menubar.add(help);
-		
+
 		frame.setSize(500, 500);
+		
+		noEmulation = new JLabel("<html><center><h1>No emulation.</h1>Please use <b>File -> New Emulation</b> to create a emulation!</center></html>");
+		noEmulation.setSize(frame.getSize());
+		noEmulation.setHorizontalAlignment(JLabel.CENTER);
+		frame.add(noEmulation);
 		
 		frame.setVisible(true);
 	}

@@ -1,8 +1,11 @@
 package net.aegistudio.mcb.board;
 
+import java.io.InputStream;
+
 import net.aegistudio.mcb.AbstractGrid;
 import net.aegistudio.mcb.Cell;
 import net.aegistudio.mcb.Component;
+import net.aegistudio.mcb.ComponentFactory;
 import net.aegistudio.mcb.layout.LayoutGrid;
 import net.aegistudio.mcb.layout.LayoutUnitCell;
 import net.aegistudio.mcb.layout.LayoutWireCell;
@@ -46,6 +49,13 @@ public class ActualGrid extends AbstractGrid {
 		}, Unit.class);
 	}
 
+	public void load(InputStream inputStream, ComponentFactory table) throws Exception {
+		super.load(inputStream, table);
+		this.all((r, c, cell, wire) -> {
+			cell.tick();
+		}, Wire.class);
+	}
+	
 	@Override
 	protected Cell decode(int code, int row, int column) {
 		return super.getCell(row, column);
