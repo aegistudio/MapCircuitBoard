@@ -3,7 +3,7 @@ package net.aegistudio.mcb;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-public enum Binary implements Cloneable {
+public enum Binary implements Data {
 	FALSE(false), TRUE(true);
 	
 	public final boolean booleanValue;
@@ -25,5 +25,10 @@ public enum Binary implements Cloneable {
 	
 	public Binary not() {
 		return to(!booleanValue);
+	}
+
+	@Override
+	public Binary duplicate() {
+		return this;
 	}
 }

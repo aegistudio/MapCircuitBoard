@@ -53,12 +53,12 @@ public interface Cell {
 	/**
 	 * The stored data for the component.
 	 */
-	public <T extends Cloneable> T getData(Class<T> dataClazz);
+	public <T extends Data> T getData(Class<T> dataClazz);
 	
 	/**
 	 * @param data the data to set.
 	 */
-	public <T extends Cloneable> void setData(T data);
+	public <T extends Data> void setData(T data);
 	
 	/**
 	 * @param input

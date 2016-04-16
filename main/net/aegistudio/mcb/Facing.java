@@ -6,7 +6,7 @@ import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
-public enum Facing implements Cloneable {
+public enum Facing implements Data {
 	NORTH(+1, 0),
 	EAST(0, +1),
 	SOUTH(-1, 0),
@@ -63,6 +63,10 @@ public enum Facing implements Cloneable {
 	
 	public static void all(Consumer<Facing> consumer) {
 		for(Facing f : values()) consumer.accept(f);
+	}
+	
+	public Facing duplicate() {
+		return this;
 	}
 	
 	public void side(BiConsumer<Integer, Integer> consumer) {

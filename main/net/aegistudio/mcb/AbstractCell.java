@@ -30,10 +30,10 @@ public abstract class AbstractCell<G extends Grid, C extends Component> implemen
 	@Override
 	public Cell adjacence(Facing port) {	return port.call(row, column, (r, c) -> grid.getCell(r, c));	}
 
-	private Cloneable data;
+	private Data data;
 	@SuppressWarnings("unchecked")
-	public @Override <T extends Cloneable> T getData(Class<T> dataClazz) {	return (T)data;	}
-	public @Override <T extends Cloneable> void setData(T data) {	this.data = data;	}
+	public @Override <T extends Data> T getData(Class<T> dataClazz) {	return (T)data;	}
+	public @Override <T extends Data> void setData(T data) {	this.data = data;	}
 
 	@SuppressWarnings("unchecked")
 	@Override

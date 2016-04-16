@@ -1,12 +1,11 @@
 package net.aegistudio.mcb.stdaln;
 
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseWheelEvent;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.util.List;
 
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -18,31 +17,24 @@ import javax.swing.KeyStroke;
 import javax.swing.UIManager;
 import javax.swing.filechooser.FileFilter;
 
-import net.aegistudio.mcb.Air;
-import net.aegistudio.mcb.ComponentFactory;
 import net.aegistudio.mcb.Data;
 import net.aegistudio.mcb.Facing;
+import net.aegistudio.mcb.board.ActualGrid;
 import net.aegistudio.mcb.layout.LayoutGrid;
-import net.aegistudio.mcb.layout.LayoutUnitCell;
-import net.aegistudio.mcb.layout.LayoutWireCell;
 import net.aegistudio.mpp.Interaction;
 
-public class LayoutGridEditor extends AwtGridComponent {
+public class ActualGridEmulator extends AwtGridComponent {
 	private static final long serialVersionUID = 1L;
 	
-	public LayoutGridEditor(LayoutGrid grid) {
+	public ActualGridEmulator(ActualGrid grid) {
 		super(grid);
 		
 		this.addMouseListener(new MouseAdapter() {
 			public void mousePressed(MouseEvent me) {
 				manipulate(me.getPoint(), (x, y, cell) -> {
 					boolean right = me.getButton() == MouseEvent.BUTTON3;
-					if(!right) 
-						grid.setCell(y / 4, x / 4, component);
-					else if(cell != null) {
-						if(right) cell.getComponent().interact(cell, 
+					if(cell != null) cell.getComponent().interact(cell, 
 								new Interaction(x, y, null, null, null, right));
-					}
 					repaint();
 				});
 			}
@@ -56,67 +48,33 @@ public class LayoutGridEditor extends AwtGridComponent {
 					currentY = me.getY();
 					
 					if(cell != null) {
-						if(cell instanceof LayoutWireCell) {
-							StringBuilder textBuilder = new StringBuilder();
-							textBuilder.append("LayoutWire: "); 
-							String name = cell.getComponent().getClass().getTypeName();
-							textBuilder.append(name.substring(1 + name.lastIndexOf('.')));
-							textBuilder.append(" (" + cell.getColumn() + ", " + cell.getRow() + ")");
-							LayoutWireCell wire = (LayoutWireCell) cell;
-							for(LayoutUnitCell adjacence : wire.allAdjacentUnit()) {
-								textBuilder.append("\n");
-								for(Facing facing : Facing.values()) {
-									short distance = wire.getDistance(adjacence, facing);
-									textBuilder.append(facing.name().charAt(0) + ":");
-									textBuilder.append(distance == Short.MAX_VALUE? "N" : distance);
-									textBuilder.append(' ');
-								}
-								textBuilder.append("-> (" + adjacence.getColumn() + ", " + adjacence.getRow() + ")");
-							}
-							
-							text = new String(textBuilder);
+						StringBuilder textBuilder = new StringBuilder();
+						String name = cell.getComponent().getClass().getTypeName();
+						textBuilder.append(name.substring(1 + name.lastIndexOf('.')));
+						textBuilder.append(" (" + cell.getColumn() + ", " + cell.getRow() + ")");
+						textBuilder.append("\n");
+						for(Facing facing : Facing.values()) {
+							textBuilder.append(facing.name().charAt(0) + ":");
+							textBuilder.append(cell.getLevel(facing));
+							textBuilder.append(' ');
 						}
-						else if(cell instanceof LayoutUnitCell) {
-							StringBuilder textBuilder = new StringBuilder();
-							textBuilder.append("LayoutUnit: ");
-							String name = cell.getComponent().getClass().getTypeName();
-							textBuilder.append(name.substring(1 + name.lastIndexOf('.')));
-							textBuilder.append(" (" + cell.getColumn() + ", " + cell.getRow() + ")");
-							Object data = cell.getData(Data.class);
-							if(data != null) {
-								textBuilder.append("\n");
-								textBuilder.append("Data: ");
-								textBuilder.append(data.toString());
-							}
-							text = new String(textBuilder);
+						
+						Object data = cell.getData(Data.class);
+						if(data != null) {
+							textBuilder.append("\n");
+							textBuilder.append("Data: ");
+							textBuilder.append(data.toString());
 						}
+						text = new String(textBuilder);
 					}
 					repaint();
 				});
 			}
 		});
-		
-		this.addMouseWheelListener((MouseWheelEvent e) -> {
-			int rotation = e.getWheelRotation();
-			List<net.aegistudio.mcb.Component> components = ComponentFactory.all();
-			this.tool(ComponentFactory.get((ComponentFactory.id(component) 
-					+ (rotation > 0? 1 : components.size() - 1)) % components.size()));
-			currentX = e.getX();
-			currentY = e.getY();
-			text = component.getClass().getName();
-			text = text.substring(text.lastIndexOf('.') + 1);
-			text = "Tool: " + text;
-			repaint();
-		});
 	}
 	
-	net.aegistudio.mcb.Component component = Air.INSTANCE;
-	public void tool(net.aegistudio.mcb.Component component) {
-		this.component = component;
-	}
-	
-	static LayoutGridEditor gridComponent;
-	static void resetGridComponent(JFrame frame, LayoutGridEditor newComponent) {
+	static ActualGridEmulator gridComponent;
+	static void resetGridComponent(JFrame frame, ActualGridEmulator newComponent) {
 		if(gridComponent != null) frame.remove(gridComponent);
 		gridComponent = newComponent;
 		gridComponent.setLocation(0, 0);
@@ -126,25 +84,41 @@ public class LayoutGridEditor extends AwtGridComponent {
 		frame.repaint();
 	}
 	
+	public void tick() {
+		grid.tick();
+		grid.paint(paintable);
+		repaint();
+	}
+	
 	public static void main(String[] arguments) {
 		try {UIManager.setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");} catch(Exception e) {}
-		JFrame frame = new JFrame("Layout");
+		JFrame frame = new JFrame("Emulation");
 		frame.setLayout(null);
 		frame.setResizable(false);
 		frame.setLocationRelativeTo(null);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.addKeyListener(new KeyListener() {
+			@Override
+			public void keyPressed(KeyEvent arg0) {
+				
+			}
+
+			@Override
+			public void keyReleased(KeyEvent arg0) {
+				
+			}
+
+			@Override
+			public void keyTyped(KeyEvent arg0) {
+				if(gridComponent != null) 
+					gridComponent.tick();
+			}
+		});
 		
 		JMenuBar menubar = new JMenuBar();
 		frame.setJMenuBar(menubar);
 		
 		JMenu file = new JMenu("File");
-		JMenuItem newFile = new JMenuItem("New");
-		newFile.addActionListener(a -> {
-			resetGridComponent(frame, new LayoutGridEditor(new LayoutGrid()));
-		});
-		file.add(newFile);
-		file.addSeparator();
-		
 		JFileChooser chooser = new JFileChooser(); {
 			chooser.setFileFilter(new FileFilter() {
 				@Override
@@ -160,21 +134,22 @@ public class LayoutGridEditor extends AwtGridComponent {
 			});
 		}
 		
-		JMenuItem openFile = new JMenuItem("Open Layout");
+		JMenuItem openFile = new JMenuItem("New Emulation");
 		openFile.addActionListener(a -> {
 			if(JFileChooser.APPROVE_OPTION == chooser.showOpenDialog(frame)) try {
 				FileInputStream input = new FileInputStream(chooser.getSelectedFile());
 				LayoutGrid grid = new LayoutGrid();	grid.load(input);
-				resetGridComponent(frame, new LayoutGridEditor(grid));
+				ActualGrid actualGrid = new ActualGrid(grid);
+				resetGridComponent(frame, new ActualGridEmulator(actualGrid));
 			}
 			catch(Exception e) {
 				JOptionPane.showMessageDialog(frame, e.getMessage(), 
-						"Fail to open!", JOptionPane.ERROR_MESSAGE);
+						"Fail to open layout!", JOptionPane.ERROR_MESSAGE);
 			}
 		});
 		openFile.setAccelerator(KeyStroke.getKeyStroke("ctrl O"));
 		file.add(openFile);
-		
+		/*
 		JMenuItem saveFile = new JMenuItem("Save Layout");
 		saveFile.addActionListener(a -> {
 			if(JFileChooser.APPROVE_OPTION == chooser.showSaveDialog(frame)) try {
@@ -198,6 +173,7 @@ public class LayoutGridEditor extends AwtGridComponent {
 		});
 		file.add(saveFile);
 		saveFile.setAccelerator(KeyStroke.getKeyStroke("ctrl S"));
+				*/
 		menubar.add(file);
 		
 		JMenu help = new JMenu("Help");
@@ -224,7 +200,7 @@ public class LayoutGridEditor extends AwtGridComponent {
 		help.add(about);
 		menubar.add(help);
 		
-		resetGridComponent(frame, new LayoutGridEditor(new LayoutGrid()));
+		frame.setSize(500, 500);
 		
 		frame.setVisible(true);
 	}

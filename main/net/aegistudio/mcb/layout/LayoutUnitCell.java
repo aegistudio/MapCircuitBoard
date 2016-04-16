@@ -7,7 +7,7 @@ public class LayoutUnitCell extends AbstractCell<LayoutGrid, Unit>{
 
 	protected LayoutUnitCell(LayoutGrid grid, Unit component, int row, int column) {
 		super(grid, row, column);
-		super.component = component;
+		super.setComponent(component);
 	}
 
 	@Override

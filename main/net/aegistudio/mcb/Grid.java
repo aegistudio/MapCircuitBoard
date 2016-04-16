@@ -15,4 +15,6 @@ public interface Grid {
 	public void save(OutputStream outputStream) throws Exception;
 	
 	public void paint(Paintable paintable);
+	
+	public void tick();
 }
