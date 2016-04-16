@@ -15,7 +15,7 @@ public class ComponentFactory {
 	public ComponentFactory() {
 		instance.add(Air.INSTANCE);
 		instance.add(FullDirectionalWire.INSTANCE);
-		instance.add(Torch.INSTANCE);
+		Facing.all(face -> instance.add(Torch.INSTANCES[face.ordinal()]));
 		instance.add(Lever.INSTANCE);
 		instance.add(Button.INSTANCE);
 	}

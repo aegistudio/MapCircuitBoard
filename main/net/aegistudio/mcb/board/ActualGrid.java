@@ -37,16 +37,18 @@ public class ActualGrid extends AbstractGrid {
 	}
 	
 	@Override
-	public void setCell(int row, int column, Component component) {			}
+	public void setCell(int row, int column, Component component) {	
+		// Read only / immutable cell!
+	}
 	
 	public void tick() {
-		this.all((r, c, cell, wire) -> {
-			cell.tick();
-		}, Wire.class);
-		
 		this.all((r, c, cell, unit) -> {
 			cell.tick();
 		}, Unit.class);
+		
+		this.all((r, c, cell, wire) -> {
+			cell.tick();
+		}, Wire.class);
 	}
 
 	public void load(InputStream inputStream, ComponentFactory table) throws Exception {

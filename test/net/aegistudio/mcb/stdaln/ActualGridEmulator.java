@@ -222,9 +222,8 @@ public class ActualGridEmulator extends AwtGridComponent {
 		JMenuItem instruction = new JMenuItem("Instruction");
 		instruction.addActionListener(e -> {
 			JOptionPane.showMessageDialog(frame, "<html><p>Please follow the instruction:</p>"
-				+ "<li><b>Left Click</b>: Place or remove components"
-				+ "<li><b>Right Click</b>: Interact with pointing component"
-				+ "<li><b>Scroll Up/Down</b>: Select previous/next component"
+				+ "<li><b>Left/Right Click</b>: Interact with pointing component"
+				+ "<li><b>Space</b>: tick current circuit board"
 				+ "</html>", "Usage", JOptionPane.PLAIN_MESSAGE);
 		});
 		instruction.setAccelerator(KeyStroke.getKeyStroke("F1"));
@@ -232,11 +231,11 @@ public class ActualGridEmulator extends AwtGridComponent {
 		
 		JMenuItem about = new JMenuItem("About");
 		about.addActionListener(e -> {
-			JOptionPane.showMessageDialog(frame, "<html><b>Map Circuit Board</b> - Layout Debugger (beta)"
+			JOptionPane.showMessageDialog(frame, "<html><b>Map Circuit Board</b> - Emulator (beta)"
 				+ "<br><b>Author</b>: aegistudio"
 				+ "<br><b>Purpose</b>:<br>"
-				+ "<li>interactive test of layout"
-				+ "<li>design layout</html>", 
+				+ "<li>interactive test of actual circuit board"
+				+ "<li>validate circuit board design</html>", 
 				"About", JOptionPane.INFORMATION_MESSAGE);
 		});
 		help.add(about);

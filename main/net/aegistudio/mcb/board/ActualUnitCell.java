@@ -23,11 +23,13 @@ public class ActualUnitCell extends AbstractCell<ActualGrid, Unit> {
 	}
 	
 	public void load(InputStream inputStream, ComponentFactory factory) throws Exception {
+		component.load(this, inputStream);
 		DataInputStream din = new DataInputStream(inputStream);
 		for(Facing f : Facing.values()) super.setLevel(f, din.readInt());
 	}
 	
 	public void save(OutputStream outputStream, ComponentFactory factory) throws Exception {
+		component.save(this, outputStream);
 		DataOutputStream dout = new DataOutputStream(outputStream);
 		for(Facing f : Facing.values()) dout.writeInt(super.getLevel(f));
 	}

@@ -1,5 +1,7 @@
 package net.aegistudio.mcb;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 
@@ -38,13 +40,15 @@ public abstract class AbstractCell<G extends Grid, C extends Component> implemen
 	@SuppressWarnings("unchecked")
 	@Override
 	public void load(InputStream input, ComponentFactory table) throws Exception {
-		this.component = (C) table.get(input.read());
+		DataInputStream din = new DataInputStream(input);
+		this.component = (C) table.get(din.readShort());
 		this.component.load(this, input);
 	}
 
 	@Override
 	public void save(OutputStream output, ComponentFactory table) throws Exception {
-		output.write(table.id(component));
+		DataOutputStream dout = new DataOutputStream(output);
+		dout.writeShort(table.id(component));
 		component.save(this, output);
 	}
 	

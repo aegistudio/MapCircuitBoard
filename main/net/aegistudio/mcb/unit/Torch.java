@@ -10,33 +10,39 @@ import net.aegistudio.mpp.Interaction;
 import net.aegistudio.mpp.algo.Paintable;
 
 public class Torch implements Unit {
-	public static final Torch INSTANCE = new Torch();
-	private Torch() {}
+	public static final Torch[] INSTANCES = new Torch[Facing.values().length];
+	static {
+		Facing.all(face -> new Torch(face));
+	}
+	private final Facing inputSide;
+	private Torch(Facing facing) {
+		this.inputSide = facing;
+		INSTANCES[facing.ordinal()] = this;
+	}
 	
 	@Override
 	public void init(Cell cell) {
-		cell.setData(Facing.NORTH);
+		
 	}
 
 	@Override
 	public void load(Cell cell, InputStream inputStream) throws Exception {
-		cell.setData(Facing.load(inputStream));
+		
 	}
 
 	@Override
 	public void save(Cell cell, OutputStream outputStream) throws Exception {
-		cell.getData(Facing.class).save(outputStream);
+
 	}
 
 	@Override
 	public void interact(Cell cell, Interaction interaction) {
-		cell.setData(cell.getData(Facing.class).nextQuad());
+		Facing newQuad = interaction.rightHanded? inputSide.nextQuad() : inputSide.previousQuad();
+		cell.getGrid().setCell(cell.getRow(), cell.getColumn(), Torch.INSTANCES[newQuad.ordinal()]);
 	}
 
 	@Override
 	public void paint(Cell cell, Paintable paintable) {
-		Facing inputSide = cell.getData(Facing.class);
-		
 		paintable.color(cell.getLevel(inputSide.opposite()) != 0? 
 				Color.YELLOW : Color.BLACK);
 		
@@ -45,13 +51,12 @@ public class Torch implements Unit {
 				paintable.set(i, j);
 		
 		paintable.color(Color.GREEN);
-		inputSide.side((i, j)->paintable.set(i, j));
+		inputSide.side((i, j) -> paintable.set(i, j));
 	}
 	
 	@Override
 	public void tick(Cell cell) {
-		Cell adjCell = cell.adjacence(cell.getData(Facing.class));
-		Facing inputSide = cell.getData(Facing.class);
+		Cell adjCell = cell.adjacence(inputSide);
 		int level = 0;
 		if(adjCell != null) 
 			level = adjCell.getLevel(inputSide.opposite());
