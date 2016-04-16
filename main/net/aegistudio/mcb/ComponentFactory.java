@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import net.aegistudio.mcb.unit.Lever;
 import net.aegistudio.mcb.unit.Torch;
 import net.aegistudio.mcb.wire.FullDirectionalWire;
 
@@ -13,6 +14,7 @@ public class ComponentFactory {
 		instance.add(Air.INSTANCE);
 		instance.add(FullDirectionalWire.INSTANCE);
 		instance.add(Torch.INSTANCE);
+		instance.add(Lever.INSTANCE);
 	}
 	
 	public static int id(Component component) {

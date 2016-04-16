@@ -179,8 +179,10 @@ public class LayoutGridEditor extends AwtGridComponent {
 		saveFile.addActionListener(a -> {
 			if(JFileChooser.APPROVE_OPTION == chooser.showSaveDialog(frame)) try {
 				File save = chooser.getSelectedFile();
-				if(!save.getName().endsWith(".lyt")) 
+				if(!save.getName().endsWith(".lyt")) {
 					save = new File(save.getParentFile(), save.getName().concat(".lyt"));
+					chooser.setSelectedFile(save);
+				}
 				
 				if(save.exists()) {
 					if(JOptionPane.showConfirmDialog(frame, "File already exists, are you sure to replace?")
