@@ -41,9 +41,8 @@ public class SchemeCanvas implements PluginCanvas {
 		else {
 			// Placing
 			if(i.sender instanceof Player) {
-				//Player player = (Player) i.sender;
-				//player.getItemInHand();
-				this.scheme.setCell(row, column, null);
+				plugin.placeListener.interact(scheme, 
+						row, column, (Player) i.sender);
 				repaint();
 			}
 		}
@@ -61,7 +60,6 @@ public class SchemeCanvas implements PluginCanvas {
 	public void load(InputStream input) {
 		try {
 			this.scheme.load(input, plugin.getComponentTable());
-			repaint();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -78,11 +76,12 @@ public class SchemeCanvas implements PluginCanvas {
 
 	@Override
 	public void add(PluginCanvasRegistry<? extends PluginCanvas> arg0) {
-		
+		plugin.schemes.put(arg0.mapid(), this);
+		repaint();
 	}
 
 	@Override
 	public void remove(PluginCanvasRegistry<? extends PluginCanvas> arg0) {
-		
+		plugin.schemes.remove(arg0.mapid());
 	}
 }

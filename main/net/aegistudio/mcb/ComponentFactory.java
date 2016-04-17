@@ -24,6 +24,12 @@ public class ComponentFactory {
 		return instance.indexOf(component);
 	}
 	
+	public int id(Class<? extends Component> clazz) {
+		for(int i = 0; i < instance.size(); i ++)
+			if(clazz == instance.get(i).getClass()) return i;
+		return -1;
+	}
+	
 	public Component get(int index) {
 		return instance.get(index);
 	}
