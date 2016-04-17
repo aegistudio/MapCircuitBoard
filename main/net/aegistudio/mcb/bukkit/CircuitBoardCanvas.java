@@ -116,7 +116,7 @@ public class CircuitBoardCanvas implements PluginCanvas {
 		// Check map in-place.
 		if(location != null) {
 			boolean contains = false;
-			for(Entity entity : location.getWorld().getNearbyEntities(location, 2.0, 2.0, 2.0))
+			for(Entity entity : location.getWorld().getNearbyEntities(location, 1.6, 1.6, 1.6))
 				if(entity instanceof ItemFrame) {
 					ItemFrame frame = (ItemFrame) entity;
 					ItemStack internalItem = frame.getItem();
@@ -135,15 +135,18 @@ public class CircuitBoardCanvas implements PluginCanvas {
 			if(this.grid == null) {
 				this.grid = new ActualGrid(referred.canvas().scheme);
 				this.grid.add();
-				if(!plugin.circuit.containsKey(this.canvas.mapid()))
-					plugin.circuit.put(this.canvas.mapid(), this.canvas);
+
+				if(plugin.circuit.containsKey(this.canvas.mapid()))
+					plugin.circuit.remove(this.canvas.mapid());
 			}
-		else if(this.location == null && this.referred == null) 
+		
+		if(this.location == null && this.referred == null) 
 			if(this.grid != null) {
 				this.grid.remove();
 				this.grid = null;
-				if(plugin.circuit.containsKey(this.canvas.mapid()))
-					plugin.circuit.remove(this.canvas.mapid());
+				
+				if(!plugin.circuit.containsKey(this.canvas.mapid()))
+					plugin.circuit.put(this.canvas.mapid(), this.canvas);
 			}
 		
 		// Actually tick.
