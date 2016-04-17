@@ -4,6 +4,8 @@ import java.util.TreeMap;
 
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import net.aegistudio.mcb.Air;
@@ -33,6 +35,7 @@ public class MapCircuitBoard extends JavaPlugin {
 			= new ComponentPlaceListener();
 	
 	public int internalTick = 1;
+	public CircuitBoardItem circuitBoardItem;
 	
 	public void onEnable() {
 		factory = new ComponentFactory();
@@ -56,6 +59,9 @@ public class MapCircuitBoard extends JavaPlugin {
 			t.printStackTrace();
 		}
 		
+		circuitBoardItem = new CircuitBoardItem(this);
+		getServer().getPluginManager().registerEvents(circuitBoardItem, this);
+		
 		try {
 			commandService = super.getServer().getServicesManager()
 					.getRegistration(PluginCommandService.class).getProvider();
@@ -63,7 +69,24 @@ public class MapCircuitBoard extends JavaPlugin {
 					new CanvasCommandHandle<MapCircuitBoard, SchemeCanvas>() {
 				public @Override String description() {		return "create a circuit scheme!";		}
 				
+				public @Override boolean handle(MapCircuitBoard arg0, CommandSender arg1, 
+						String[] arg2, SchemeCanvas arg3) {
+					return true;
+				}
+				
+				public @Override String paramList() {	return "";	}
+			});
+			
+			commandService.registerControl(this, "create/circuit", "scheme", SchemeCanvas.class, 
+					new CanvasCommandHandle<MapCircuitBoard, SchemeCanvas>() {
+				public @Override String description() {		return "get a circuit board item!";		}
+				
 				public @Override boolean handle(MapCircuitBoard arg0, CommandSender arg1, String[] arg2, SchemeCanvas arg3) {
+					if(!(arg1 instanceof Player)) return false;
+					ItemStack boardItem = new ItemStack(Material.MAP, 1);
+					circuitBoardItem.make(boardItem, arg3.registry);
+					Player player = (Player) arg1;
+					player.getLocation().getWorld().dropItem(player.getLocation(), boardItem);
 					return true;
 				}
 				

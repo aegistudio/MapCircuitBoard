@@ -7,7 +7,11 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.ItemFrame;
+import org.bukkit.inventory.ItemStack;
 
 import net.aegistudio.mcb.Cell;
 import net.aegistudio.mcb.board.ActualGrid;
@@ -41,8 +45,11 @@ public class CircuitBoardCanvas implements PluginCanvas {
 
 	@Override
 	public boolean interact(Interaction i) {
-		Cell cell = this.grid.getCell(i.y / 4, i.x / 4);
-		if(cell != null) cell.getComponent().interact(cell, i);
+		if(this.grid != null) {
+			Cell cell = this.grid.getCell(i.y / 4, i.x / 4);
+			if(cell != null) 
+				cell.getComponent().interact(cell, i);
+		}
 		return true;
 	}
 
@@ -60,7 +67,7 @@ public class CircuitBoardCanvas implements PluginCanvas {
 				this.location = worldInstance
 						.getBlockAt(blockX, blockY, blockZ).getLocation();
 				
-				this.referred = this.plugin.schemes.get(din.readShort());
+				this.referred = this.plugin.schemes.get((int)din.readShort());
 				
 				this.grid = new ActualGrid(referred.canvas().scheme);
 				this.grid.load(input, plugin.factory);
@@ -106,6 +113,24 @@ public class CircuitBoardCanvas implements PluginCanvas {
 	
 	@Override
 	public void tick() {
+		// Check map in-place.
+		if(location != null) {
+			boolean contains = false;
+			for(Entity entity : location.getWorld().getNearbyEntities(location, 2.0, 2.0, 2.0))
+				if(entity instanceof ItemFrame) {
+					ItemFrame frame = (ItemFrame) entity;
+					ItemStack internalItem = frame.getItem();
+					if(internalItem != null) 
+						if(internalItem.getType() == Material.MAP)
+							if(internalItem.getDurability() == canvas.mapid()) {
+								contains = true;
+								break;
+							}
+				}
+			if(!contains) defer();
+		}
+		
+		// Update reference.
 		if(this.location != null && this.referred != null)
 			if(this.grid == null) {
 				this.grid = new ActualGrid(referred.canvas().scheme);
@@ -121,10 +146,12 @@ public class CircuitBoardCanvas implements PluginCanvas {
 					plugin.circuit.remove(this.canvas.mapid());
 			}
 		
+		// Actually tick.
 		if(this.grid != null) {
 			for(int i = 0; i < plugin.internalTick; i ++)
 				grid.tick();
 			grid.paint(context);
+			context.repaint();
 		}
 	}
 }
