@@ -13,6 +13,7 @@ import net.aegistudio.mcb.unit.Lever;
 import net.aegistudio.mcb.unit.Torch;
 import net.aegistudio.mcb.wire.FullDirectionalWire;
 import net.aegistudio.mpp.export.CanvasCommandHandle;
+import net.aegistudio.mpp.export.PluginCanvasRegistry;
 import net.aegistudio.mpp.export.PluginCanvasService;
 import net.aegistudio.mpp.export.PluginCommandService;
 
@@ -25,10 +26,13 @@ public class MapCircuitBoard extends JavaPlugin {
 	
 	public PluginCanvasService canvasService;
 	public PluginCommandService commandService;
-	public TreeMap<Integer, SchemeCanvas> schemes;
+	public TreeMap<Integer, PluginCanvasRegistry<SchemeCanvas>> schemes;
+	public TreeMap<Integer, PluginCanvasRegistry<CircuitBoardCanvas>> circuit;
 	
 	public ComponentPlaceListener placeListener
 			= new ComponentPlaceListener();
+	
+	public int internalTick = 1;
 	
 	public void onEnable() {
 		factory = new ComponentFactory();
@@ -42,10 +46,11 @@ public class MapCircuitBoard extends JavaPlugin {
 			canvasService = super.getServer().getServicesManager()
 					.getRegistration(PluginCanvasService.class).getProvider();
 			
-			schemes = new TreeMap<Integer, SchemeCanvas>();
+			schemes = new TreeMap<Integer, PluginCanvasRegistry<SchemeCanvas>>();
 			canvasService.register(this, "scheme", (context) -> new SchemeCanvas(this, context));
 			
-			//service.register(this, "redstone", (context) -> new CircuitBoardCanvas(this, context));
+			circuit = new TreeMap<Integer, PluginCanvasRegistry<CircuitBoardCanvas>>();
+			canvasService.register(this, "redstone", (context) -> new CircuitBoardCanvas(this, context));
 		}
 		catch(Throwable t) {
 			t.printStackTrace();

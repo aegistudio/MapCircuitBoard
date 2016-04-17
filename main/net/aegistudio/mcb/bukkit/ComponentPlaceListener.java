@@ -37,16 +37,24 @@ public class ComponentPlaceListener {
 		ItemStack item = player.getItemInHand();
 		if(item != null) {
 			List<ComponentPlacer> suspicious = placers.get(item.getType());
-			if(suspicious != null) for(ComponentPlacer placer : suspicious)
-				if(placer.matches(item)) {
-					if(previousComponent == placer.component) return;
-					if(previousComponent != null)
-						reverseMap.get(previousComponent).repay(player);
-					
-					placer.place(grid, player, row, column);
-					grid.setCell(row, column, placer.component);
-					return;
-				}
+			if(suspicious != null)
+				for(ComponentPlacer placer : suspicious)
+					if(placer.matches(item)) {
+						onPlace(grid, row, column, player, previousComponent, placer);
+						return ;
+					}
 		}
+		onPlace(grid, row, column, player, 
+				previousComponent, placers.get(Material.AIR).get(0));
+	}
+	
+	protected void onPlace(Grid grid, int row, int column, 
+			Player player, Component previousComponent, ComponentPlacer placer) {
+		if(previousComponent == placer.component) return;
+		if(previousComponent != null)
+			reverseMap.get(previousComponent).repay(player);
+		
+		placer.place(grid, player, row, column);
+		grid.setCell(row, column, placer.component);
 	}
 }

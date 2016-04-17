@@ -80,9 +80,10 @@ public class SchemeCanvas implements PluginCanvas {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void add(PluginCanvasRegistry<? extends PluginCanvas> arg0) {
-		plugin.schemes.put(arg0.mapid(), this);
+		plugin.schemes.put(arg0.mapid(), (PluginCanvasRegistry<SchemeCanvas>) arg0);
 		repaint();
 	}
 
