@@ -38,7 +38,7 @@ public class ComponentPlacer {
 	}
 	
 	protected void repay(Player who) {
-		who.getInventory()
-			.addItem(new ItemStack(type));
+		who.getLocation().getWorld().dropItem(who.getLocation(), 
+				new ItemStack(type));
 	}
 }

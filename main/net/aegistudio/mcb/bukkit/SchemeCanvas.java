@@ -37,9 +37,15 @@ public class SchemeCanvas implements PluginCanvas {
 				target.getComponent().interact(target, i);
 				repaint();
 			}
+			else if(i.sender instanceof Player) {
+				// Placing while air.
+				plugin.placeListener.interact(scheme, row, 
+						column, (Player)i.sender);
+				repaint();
+			}
 		}
 		else {
-			// Placing
+			// Placing / Replacing
 			if(i.sender instanceof Player) {
 				plugin.placeListener.interact(scheme, 
 						row, column, (Player) i.sender);
