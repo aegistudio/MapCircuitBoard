@@ -7,6 +7,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.mcstats.Metrics;
 
 import net.aegistudio.mcb.Air;
 import net.aegistudio.mcb.ComponentFactory;
@@ -92,6 +93,16 @@ public class MapCircuitBoard extends JavaPlugin {
 				
 				public @Override String paramList() {	return "";	}
 			});
+			
+			/**
+			 * Sending metric message to mcstats.
+			 */
+		    try {
+		        Metrics metrics = new Metrics(this);
+		        metrics.start();
+		    } catch (Exception e) {
+		        
+		    }
 		}
 		catch(Throwable t) {
 			t.printStackTrace();
