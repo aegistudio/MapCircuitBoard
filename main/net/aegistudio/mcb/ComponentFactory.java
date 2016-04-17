@@ -3,6 +3,7 @@ package net.aegistudio.mcb;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Consumer;
 
 import net.aegistudio.mcb.unit.Button;
 import net.aegistudio.mcb.unit.Lever;
@@ -36,5 +37,12 @@ public class ComponentFactory {
 	
 	public List<Component> all() {
 		return Collections.unmodifiableList(instance);
+	}
+	
+	public void all(Class<? extends Component> clazz, 
+			Consumer<Component> consumer) {
+		for(int i = 0; i < instance.size(); i ++)
+			if(clazz == instance.get(i).getClass())
+				consumer.accept(instance.get(i));
 	}
 }

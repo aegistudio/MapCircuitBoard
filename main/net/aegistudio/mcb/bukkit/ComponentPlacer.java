@@ -1,5 +1,6 @@
 package net.aegistudio.mcb.bukkit;
 
+import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -31,6 +32,7 @@ public class ComponentPlacer {
 	
 	@SuppressWarnings("deprecation")
 	protected void consume(Player who) {
+		if(who.getGameMode() != GameMode.SURVIVAL) return;
 		ItemStack itemStack = who.getItemInHand();
 		itemStack.setAmount(itemStack.getAmount() - 1);
 		if(itemStack.getAmount() == 0)
@@ -38,7 +40,8 @@ public class ComponentPlacer {
 	}
 	
 	protected void repay(Player who) {
-		who.getLocation().getWorld().dropItem(who.getLocation(), 
-				new ItemStack(type));
+		if(who.getGameMode() == GameMode.SURVIVAL)
+			who.getLocation().getWorld().dropItem(who.getLocation(), 
+					new ItemStack(type));
 	}
 }

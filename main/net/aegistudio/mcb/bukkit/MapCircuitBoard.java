@@ -34,7 +34,7 @@ public class MapCircuitBoard extends JavaPlugin {
 		factory = new ComponentFactory();
 		placeListener.add(new ComponentPlacer(Material.AIR, factory.get(factory.id(Air.class))));
 		placeListener.add(new ComponentPlacer(Material.REDSTONE, factory.get(factory.id(FullDirectionalWire.class))));
-		placeListener.add(new ComponentPlacer(Material.REDSTONE_TORCH_ON, factory.get(factory.id(Torch.class))));
+		factory.all(Torch.class, torch -> placeListener.add(new ComponentPlacer(Material.REDSTONE_TORCH_ON, torch)));
 		placeListener.add(new ComponentPlacer(Material.LEVER, factory.get(factory.id(Lever.class))));
 		placeListener.add(new ComponentPlacer(Material.WOOD_BUTTON, factory.get(factory.id(Button.class))));
 		
