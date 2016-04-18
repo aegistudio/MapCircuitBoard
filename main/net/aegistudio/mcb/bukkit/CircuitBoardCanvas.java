@@ -88,7 +88,8 @@ public class CircuitBoardCanvas implements PluginCanvas, PlaceSensitive {
 	public void save(OutputStream output) {
 		try {
 			DataOutputStream dout = new DataOutputStream(output);
-			if(location == null)
+			if(location == null || referred == null || 
+					referred.canvas().registry.mapid() < 0)
 				dout.writeUTF("");
 			else {
 				dout.writeUTF(location.getWorld().getName());
