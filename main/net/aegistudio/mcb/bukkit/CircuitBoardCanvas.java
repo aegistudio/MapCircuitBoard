@@ -135,23 +135,23 @@ public class CircuitBoardCanvas implements PluginCanvas {
 		}
 		
 		// Update reference.
-		if(this.location != null && this.referred != null)
+		if(this.location != null && this.referred != null) {
 			if(this.grid == null) {
 				this.grid = new ActualGrid(referred.canvas().scheme);
 				this.grid.add();
-
-				if(plugin.circuit.containsKey(this.canvas.mapid()))
-					plugin.circuit.remove(this.canvas.mapid());
 			}
+			if(plugin.circuit.containsKey(this.canvas.mapid()))
+				plugin.circuit.remove(this.canvas.mapid());
+		}
 		
-		if(this.location == null && this.referred == null) 
+		if(this.location == null && this.referred == null) {
 			if(this.grid != null) {
 				this.grid.remove();
 				this.grid = null;
-				
-				if(!plugin.circuit.containsKey(this.canvas.mapid()))
-					plugin.circuit.put(this.canvas.mapid(), this.canvas);
 			}
+			if(!plugin.circuit.containsKey(this.canvas.mapid()))
+				plugin.circuit.put(this.canvas.mapid(), this.canvas);
+		}
 		
 		// Actually tick.
 		if(this.grid != null) {
