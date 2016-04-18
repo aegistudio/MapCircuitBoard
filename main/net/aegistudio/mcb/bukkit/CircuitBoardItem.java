@@ -9,14 +9,12 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.ItemFrame;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.map.MapView;
 
 import net.aegistudio.mpp.export.PluginCanvasRegistry;
 
@@ -68,33 +66,28 @@ public class CircuitBoardItem implements Listener {
 		if(scheme == null) return;
 		
 		PluginCanvasRegistry<CircuitBoardCanvas> board = null;
-		if(plugin.circuit.isEmpty()) try {
+		try {
 			board = plugin.canvasService.generate(plugin, "redstone", CircuitBoardCanvas.class);
-			MapView map = plugin.getServer().createMap(event.getPlayer().getWorld());
-			plugin.canvasService.create(map.getId(), null, 
-					"circuitboard_" + map.getId(), board);
+			plugin.canvasService.create(null, "circuitboard_" + System.currentTimeMillis(), board);
 		}
 		catch(Exception e) {
 			board = null;
 		}
-		else board = plugin.circuit.remove(plugin.circuit.firstKey());
 		if(board == null || board.mapid() < 0) return;
 		
 		Location blockLocation = block.getLocation();
 		try {
-			ItemFrame frame = blockLocation.getWorld().spawn(blockLocation.add(
-					event.getBlockFace().getModX(),
-					event.getBlockFace().getModY(),
-					event.getBlockFace().getModZ()), ItemFrame.class);
-			frame.setFacingDirection(event.getBlockFace());
-			frame.setItem(new ItemStack(Material.MAP, 1, (short)board.mapid()));
-			
+			plugin.canvasService.place(blockLocation, event.getBlockFace(), board);
 			final PluginCanvasRegistry<CircuitBoardCanvas> actualBoard = board;
 			plugin.getServer().getScheduler().runTaskLater(plugin, 
 					() -> actualBoard.canvas().refer(block.getLocation(), scheme), 1);
 			
-			if(event.getPlayer().getGameMode() == GameMode.SURVIVAL)
-				event.getPlayer().getItemInHand().setAmount(event.getItem().getAmount() - 1);
+			if(event.getPlayer().getGameMode() == GameMode.SURVIVAL) {
+				int amount = event.getItem().getAmount() - 1;
+				if(amount > 0)
+					event.getPlayer().getItemInHand().setAmount(amount);
+				else event.getPlayer().setItemInHand(null);
+			}
 		}
 		catch(Throwable e) {
 			

@@ -9,7 +9,9 @@ import java.io.OutputStream;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.ItemFrame;
 import org.bukkit.inventory.ItemStack;
 
@@ -17,10 +19,11 @@ import net.aegistudio.mcb.Cell;
 import net.aegistudio.mcb.board.ActualGrid;
 import net.aegistudio.mpp.Interaction;
 import net.aegistudio.mpp.export.Context;
+import net.aegistudio.mpp.export.PlaceSensitive;
 import net.aegistudio.mpp.export.PluginCanvas;
 import net.aegistudio.mpp.export.PluginCanvasRegistry;
 
-public class CircuitBoardCanvas implements PluginCanvas {
+public class CircuitBoardCanvas implements PluginCanvas, PlaceSensitive {
 	public final Context context;
 	public final MapCircuitBoard plugin;
 
@@ -140,8 +143,6 @@ public class CircuitBoardCanvas implements PluginCanvas {
 				this.grid = new ActualGrid(referred.canvas().scheme);
 				this.grid.add();
 			}
-			if(plugin.circuit.containsKey(this.canvas.mapid()))
-				plugin.circuit.remove(this.canvas.mapid());
 		}
 		
 		if(this.location == null && this.referred == null) {
@@ -149,8 +150,7 @@ public class CircuitBoardCanvas implements PluginCanvas {
 				this.grid.remove();
 				this.grid = null;
 			}
-			if(!plugin.circuit.containsKey(this.canvas.mapid()))
-				plugin.circuit.put(this.canvas.mapid(), this.canvas);
+			plugin.canvasService.destroy(canvas);
 		}
 		
 		// Actually tick.
@@ -163,5 +163,16 @@ public class CircuitBoardCanvas implements PluginCanvas {
 			grid.paint(context);
 			context.repaint();
 		}
+	}
+
+	@Override
+	public void place(Location arg0, BlockFace arg1) {	
+		this.location = arg0;
+	}
+
+	@Override
+	public void unplace(Item arg0) {
+		plugin.circuitBoardItem.make(arg0.getItemStack(), this.referred);
+		this.defer();
 	}
 }

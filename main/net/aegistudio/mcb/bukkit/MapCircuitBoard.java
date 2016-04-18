@@ -30,8 +30,7 @@ public class MapCircuitBoard extends JavaPlugin {
 	public PluginCanvasService canvasService;
 	public PluginCommandService commandService;
 	public TreeMap<Integer, PluginCanvasRegistry<SchemeCanvas>> schemes;
-	public TreeMap<Integer, PluginCanvasRegistry<CircuitBoardCanvas>> circuit;
-	
+
 	public ComponentPlaceListener placeListener
 			= new ComponentPlaceListener();
 	
@@ -53,7 +52,6 @@ public class MapCircuitBoard extends JavaPlugin {
 			schemes = new TreeMap<Integer, PluginCanvasRegistry<SchemeCanvas>>();
 			canvasService.register(this, "scheme", (context) -> new SchemeCanvas(this, context));
 			
-			circuit = new TreeMap<Integer, PluginCanvasRegistry<CircuitBoardCanvas>>();
 			canvasService.register(this, "redstone", (context) -> new CircuitBoardCanvas(this, context));
 		}
 		catch(Throwable t) {
@@ -62,8 +60,6 @@ public class MapCircuitBoard extends JavaPlugin {
 		
 		circuitBoardItem = new CircuitBoardItem(this);
 		getServer().getPluginManager().registerEvents(circuitBoardItem, this);
-		
-		getServer().getPluginManager().registerEvents(new CircuitBoardEntity(this), this);
 		
 		try {
 			commandService = super.getServer().getServicesManager()
