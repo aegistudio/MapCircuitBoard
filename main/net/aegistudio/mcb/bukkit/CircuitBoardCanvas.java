@@ -28,7 +28,7 @@ public class CircuitBoardCanvas implements PluginCanvas {
 	public PluginCanvasRegistry<SchemeCanvas> referred;
 	public ActualGrid grid;
 	
-	public void setReference(Location location, PluginCanvasRegistry<SchemeCanvas> reference) {
+	public void refer(Location location, PluginCanvasRegistry<SchemeCanvas> reference) {
 		this.location = location;
 		this.referred = reference;
 	}

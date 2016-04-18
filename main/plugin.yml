@@ -2,3 +2,4 @@ name: MapCircuitBoard
 main: net.aegistudio.mcb.bukkit.MapCircuitBoard
 version: 1.0
 author: aegistudio
+softdepend: [MapPainting]

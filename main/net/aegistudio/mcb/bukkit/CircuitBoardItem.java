@@ -4,9 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.ItemFrame;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -24,10 +26,10 @@ public class CircuitBoardItem implements Listener {
 		this.plugin = plugin;
 	}
 	
-	public Material boardMaterial = Material.GOLD_PLATE;
+	public Material boardMaterial = Material.PAINTING;
 	
 	public String loreString = ChatColor.RESET + "Circuit Board Item";
-	public String idString = ChatColor.MAGIC.toString();
+	public String idString = ChatColor.MAGIC + "===========";
 	
 	public void make(ItemStack item, PluginCanvasRegistry<SchemeCanvas> canvas) {
 		item.setType(boardMaterial);
@@ -39,6 +41,8 @@ public class CircuitBoardItem implements Listener {
 		lore.add(loreString);
 		lore.add(idString + canvas.mapid());
 		meta.setLore(lore);
+		
+		meta.addEnchant(Enchantment.DURABILITY, 0, false);
 		
 		item.setItemMeta(meta);
 	}
@@ -86,7 +90,10 @@ public class CircuitBoardItem implements Listener {
 		
 		final PluginCanvasRegistry<CircuitBoardCanvas> actualBoard = board;
 		plugin.getServer().getScheduler().runTaskLater(plugin, 
-				() -> actualBoard.canvas().setReference(block.getLocation(), scheme), 1);
+				() -> actualBoard.canvas().refer(block.getLocation(), scheme), 1);
+		
+		if(event.getPlayer().getGameMode() == GameMode.SURVIVAL)
+			event.getPlayer().getItemInHand().setAmount(event.getItem().getAmount() - 1);
 		event.setCancelled(true);
 	}
 }

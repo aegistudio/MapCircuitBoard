@@ -63,6 +63,8 @@ public class MapCircuitBoard extends JavaPlugin {
 		circuitBoardItem = new CircuitBoardItem(this);
 		getServer().getPluginManager().registerEvents(circuitBoardItem, this);
 		
+		getServer().getPluginManager().registerEvents(new CircuitBoardEntity(this), this);
+		
 		try {
 			commandService = super.getServer().getServicesManager()
 					.getRegistration(PluginCommandService.class).getProvider();
