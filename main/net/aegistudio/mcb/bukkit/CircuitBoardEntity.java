@@ -3,6 +3,7 @@ package net.aegistudio.mcb.bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Item;
+import org.bukkit.entity.ItemFrame;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.ItemSpawnEvent;
@@ -27,9 +28,16 @@ public class CircuitBoardEntity implements Listener {
 			plugin.circuitBoardItem.make(item, canvas.canvas().referred);
 			e.getEntity().getNearbyEntities(.5, .5, .5)
 				.forEach((entity) -> {
-					if(entity.getType() == EntityType.DROPPED_ITEM) 
+					if(entity.getType() == EntityType.DROPPED_ITEM) {
 						if(((Item) entity).getItemStack().getType() == Material.ITEM_FRAME)
 							entity.remove();
+					}
+					else if(entity.getType() == EntityType.ITEM_FRAME) {
+						ItemStack mapitem = ((ItemFrame) entity).getItem();
+						if(mapitem.getType() == Material.MAP)
+							if(mapitem.getDurability() == mapid)
+								entity.remove();
+					}
 				});
 		}
 	}

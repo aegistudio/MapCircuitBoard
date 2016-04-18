@@ -81,19 +81,24 @@ public class CircuitBoardItem implements Listener {
 		if(board == null || board.mapid() < 0) return;
 		
 		Location blockLocation = block.getLocation();
-		ItemFrame frame = blockLocation.getWorld().spawn(blockLocation.add(
-				event.getBlockFace().getModX(),
-				event.getBlockFace().getModY(),
-				event.getBlockFace().getModZ()), ItemFrame.class);
-		frame.setFacingDirection(event.getBlockFace());
-		frame.setItem(new ItemStack(Material.MAP, 1, (short)board.mapid()));
-		
-		final PluginCanvasRegistry<CircuitBoardCanvas> actualBoard = board;
-		plugin.getServer().getScheduler().runTaskLater(plugin, 
-				() -> actualBoard.canvas().refer(block.getLocation(), scheme), 1);
-		
-		if(event.getPlayer().getGameMode() == GameMode.SURVIVAL)
-			event.getPlayer().getItemInHand().setAmount(event.getItem().getAmount() - 1);
+		try {
+			ItemFrame frame = blockLocation.getWorld().spawn(blockLocation.add(
+					event.getBlockFace().getModX(),
+					event.getBlockFace().getModY(),
+					event.getBlockFace().getModZ()), ItemFrame.class);
+			frame.setFacingDirection(event.getBlockFace());
+			frame.setItem(new ItemStack(Material.MAP, 1, (short)board.mapid()));
+			
+			final PluginCanvasRegistry<CircuitBoardCanvas> actualBoard = board;
+			plugin.getServer().getScheduler().runTaskLater(plugin, 
+					() -> actualBoard.canvas().refer(block.getLocation(), scheme), 1);
+			
+			if(event.getPlayer().getGameMode() == GameMode.SURVIVAL)
+				event.getPlayer().getItemInHand().setAmount(event.getItem().getAmount() - 1);
+		}
+		catch(Throwable e) {
+			
+		}
 		event.setCancelled(true);
 	}
 }

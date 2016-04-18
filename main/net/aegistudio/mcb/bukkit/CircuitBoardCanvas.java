@@ -45,6 +45,7 @@ public class CircuitBoardCanvas implements PluginCanvas {
 
 	@Override
 	public boolean interact(Interaction i) {
+		if(!i.rightHanded) return false;
 		if(this.grid != null) {
 			Cell cell = this.grid.getCell(i.y / 4, i.x / 4);
 			if(cell != null) 
