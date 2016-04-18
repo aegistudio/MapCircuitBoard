@@ -44,8 +44,7 @@ public class LayoutGrid extends AbstractGrid {
 		if(component != null)
 			component.init(this.cells[row][column]);
 		
-		// Push mode for notifying cell update.
-		observers.forEach(observer -> observer.update(row, column, previous, this.cells[row][column]));
+		this.update(row, column, previous);
 	}
 	
 	protected Cell decode(int value, int row, int column) {

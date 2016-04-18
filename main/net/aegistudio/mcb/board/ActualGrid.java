@@ -20,7 +20,7 @@ public class ActualGrid extends AbstractGrid {
 		this.layout.all((r, c, cell, component) -> setCell(r, c, cell));
 	}
 	
-	private AbstractGrid.CellObserver observer = (r, c, previous, current) -> setCell(r, c, current);
+	private final AbstractGrid.CellObserver observer = (r, c, previous, current) -> setCell(r, c, current);
 	public void add() {
 		this.layout.observers.add(observer);
 	}
@@ -30,8 +30,8 @@ public class ActualGrid extends AbstractGrid {
 	}
 	
 	void setCell(int r, int c, Cell cell) {
-		if(cell == null) return;
-		if(cell instanceof LayoutWireCell) 
+		if(cell == null) this.cells[r][c] = null;
+		else if(cell instanceof LayoutWireCell) 
 			this.cells[r][c] = new ActualWireCell(this, (LayoutWireCell) cell);
 		else this.cells[r][c] = new ActualUnitCell(this, (LayoutUnitCell) cell);
 	}

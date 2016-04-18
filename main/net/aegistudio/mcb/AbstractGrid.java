@@ -88,4 +88,10 @@ public abstract class AbstractGrid implements Grid {
 	public interface CellObserver {
 		public void update(int row, int column, Cell oldCell, Cell newCell);
 	}
+	
+	public void update(int row, int column, Cell previous) {
+		// Push mode for notifying cell update.
+				observers.forEach(observer -> observer.update(
+						row, column, previous, this.cells[row][column]));
+	}
 }

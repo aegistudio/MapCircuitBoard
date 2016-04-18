@@ -71,6 +71,7 @@ public class CircuitBoardCanvas implements PluginCanvas {
 				
 				this.grid = new ActualGrid(referred.canvas().scheme);
 				this.grid.load(input, plugin.factory);
+				this.grid.add();
 			}
 		}
 		catch(Exception e) {
@@ -109,7 +110,9 @@ public class CircuitBoardCanvas implements PluginCanvas {
 		this.canvas = (PluginCanvasRegistry<CircuitBoardCanvas>) arg0;
 	}
 	
-	public @Override void remove(PluginCanvasRegistry<? extends PluginCanvas> arg0) {			}
+	public @Override void remove(PluginCanvasRegistry<? extends PluginCanvas> arg0) {	
+		if(this.grid != null) this.grid.remove();
+	}
 	
 	@Override
 	public void tick() {
@@ -153,6 +156,9 @@ public class CircuitBoardCanvas implements PluginCanvas {
 		if(this.grid != null) {
 			for(int i = 0; i < plugin.internalTick; i ++)
 				grid.tick();
+			
+			context.color(null);
+			context.clear();
 			grid.paint(context);
 			context.repaint();
 		}
