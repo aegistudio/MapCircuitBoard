@@ -1,4 +1,4 @@
-package net.aegistudio.mcb.bukkit;
+package net.aegistudio.mcb.layout;
 
 import org.bukkit.GameMode;
 import org.bukkit.Material;

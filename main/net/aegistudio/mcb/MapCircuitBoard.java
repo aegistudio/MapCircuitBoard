@@ -1,4 +1,4 @@
-package net.aegistudio.mcb.bukkit;
+package net.aegistudio.mcb;
 
 import java.util.TreeMap;
 
@@ -9,8 +9,12 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.mcstats.Metrics;
 
-import net.aegistudio.mcb.Air;
-import net.aegistudio.mcb.ComponentFactory;
+import net.aegistudio.mcb.board.CircuitBoardCanvas;
+import net.aegistudio.mcb.board.CircuitBoardItem;
+import net.aegistudio.mcb.board.PropagateManager;
+import net.aegistudio.mcb.layout.ComponentPlaceListener;
+import net.aegistudio.mcb.layout.ComponentPlacer;
+import net.aegistudio.mcb.layout.SchemeCanvas;
 import net.aegistudio.mcb.unit.Button;
 import net.aegistudio.mcb.unit.Lever;
 import net.aegistudio.mcb.unit.MonitorPin;
@@ -39,6 +43,8 @@ public class MapCircuitBoard extends JavaPlugin {
 	public int internalTick = 1;
 	public CircuitBoardItem circuitBoardItem;
 	
+	public PropagateManager propagate;
+	
 	public void onEnable() {
 		factory = new ComponentFactory();
 		placeListener.add(new ComponentPlacer(Material.AIR, factory.get(factory.id(Air.class))));
@@ -48,6 +54,8 @@ public class MapCircuitBoard extends JavaPlugin {
 		placeListener.add(new ComponentPlacer(Material.WOOD_BUTTON, factory.get(factory.id(Button.class))));
 		placeListener.add(new ComponentPlacer(Material.STONE_BUTTON, factory.get(factory.id(MonitorPin.class))));
 		placeListener.add(new ComponentPlacer(Material.STONE_BUTTON, factory.get(factory.id(OriginatorPin.class))));
+		
+		propagate = new PropagateManager();
 		
 		try {
 			canvasService = super.getServer().getServicesManager()

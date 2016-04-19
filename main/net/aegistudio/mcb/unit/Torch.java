@@ -54,7 +54,7 @@ public class Torch implements Unit {
 				paintable.set(i, j);
 		
 		paintable.color(Color.GRAY.darker());
-		inputSide.side((i, j) -> paintable.set(i, j), 1, 2);
+		inputSide.side((i, j) -> paintable.set(i, j), 1, 2, 3);
 	}
 	
 	@Override

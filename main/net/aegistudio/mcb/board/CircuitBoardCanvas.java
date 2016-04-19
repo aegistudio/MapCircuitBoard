@@ -1,4 +1,4 @@
-package net.aegistudio.mcb.bukkit;
+package net.aegistudio.mcb.board;
 
 import java.awt.Color;
 import java.io.DataInputStream;
@@ -16,7 +16,9 @@ import org.bukkit.entity.ItemFrame;
 import org.bukkit.inventory.ItemStack;
 
 import net.aegistudio.mcb.Cell;
-import net.aegistudio.mcb.board.ActualGrid;
+import net.aegistudio.mcb.Facing;
+import net.aegistudio.mcb.MapCircuitBoard;
+import net.aegistudio.mcb.layout.SchemeCanvas;
 import net.aegistudio.mpp.Interaction;
 import net.aegistudio.mpp.export.Context;
 import net.aegistudio.mpp.export.PlaceSensitive;
@@ -122,8 +124,8 @@ public class CircuitBoardCanvas implements PluginCanvas, PlaceSensitive {
 	@Override
 	public void tick() {
 		// Check map in-place.
+		ItemFrame target = null;
 		if(location != null) {
-			boolean contains = false;
 			for(Entity entity : location.getWorld().getNearbyEntities(location, 1.6, 1.6, 1.6))
 				if(entity instanceof ItemFrame) {
 					ItemFrame frame = (ItemFrame) entity;
@@ -131,11 +133,11 @@ public class CircuitBoardCanvas implements PluginCanvas, PlaceSensitive {
 					if(internalItem != null) 
 						if(internalItem.getType() == Material.MAP)
 							if(internalItem.getDurability() == canvas.mapid()) {
-								contains = true;
+								target = frame;
 								break;
 							}
 				}
-			if(!contains) defer();
+			if(target == null) defer();
 		}
 		
 		// Update reference.
@@ -154,10 +156,20 @@ public class CircuitBoardCanvas implements PluginCanvas, PlaceSensitive {
 			plugin.canvasService.destroy(canvas);
 		}
 		
+		final ItemFrame finalFrame = target;
+		
 		// Actually tick.
 		if(this.grid != null) {
-			for(int i = 0; i < plugin.internalTick; i ++)
+			for(int i = 0; i < plugin.internalTick; i ++) {
+				// Take in signal.
+				Facing.all(f -> propagateIn(finalFrame, f));
+				
+				// Do tick.
 				grid.tick();
+				
+				// Emit out signal.
+				Facing.all(f -> propagateOut(finalFrame, f));
+			}
 			
 			context.color(null);
 			context.clear();
@@ -165,7 +177,29 @@ public class CircuitBoardCanvas implements PluginCanvas, PlaceSensitive {
 			context.repaint();
 		}
 	}
-
+	
+	public Location transform(Facing facing, BlockFace face, Location location) {
+		int mx = face.getModX();		int mz = face.getModZ();
+		if(facing.offsetColumn == 0) 
+			return location.add(0, facing.offsetRow, 0);
+		else {
+			/**
+			 * |i	j	k |
+			 * |0	1	0 | = mzi + 0j + -mxk.
+			 * |mx	0	mz|
+			 */
+			return location.add(mz * facing.offsetColumn, 0, -mx * facing.offsetColumn);
+		}
+	}
+	
+	public void propagateOut(ItemFrame frame, Facing face) {
+		plugin.propagate.out(transform(face, frame.getFacing(), frame.getLocation().clone()), face, this);
+	}
+	
+	public void propagateIn(ItemFrame frame, Facing face) {
+		plugin.propagate.in(transform(face, frame.getFacing(), frame.getLocation().clone()), face, this);
+	}
+	
 	@Override
 	public void place(Location arg0, BlockFace arg1) {	
 		this.location = arg0;

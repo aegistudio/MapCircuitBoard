@@ -69,12 +69,17 @@ public enum Facing implements Data {
 		return this;
 	}
 	
-	public void side(BiConsumer<Integer, Integer> consumer, int begin, int end) {
+	public interface TriConsumer{ void accept(int row, int column, int index);	}
+	public void side(TriConsumer consumer, int begin, int end, int bound) {
 		for(int i = begin; i <= end; i ++)
 			if(this.offsetColumn == 0) {
-				consumer.accept(i, this.offsetRow > 0? 3 : 0);
+				consumer.accept(this.offsetRow > 0? bound : 0, i, i);
 			}
 			else if(this.offsetRow == 0)
-				consumer.accept(this.offsetColumn > 0? 3 : 0, i);
+				consumer.accept(i, this.offsetColumn > 0? bound : 0, i);
+	}
+	
+	public void side(BiConsumer<Integer, Integer> consumer, int begin, int end, int bound) {
+		this.side((r, c, i) -> consumer.accept(c, r), begin, end, bound);
 	}
 }

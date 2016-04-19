@@ -1,4 +1,4 @@
-package net.aegistudio.mcb.bukkit;
+package net.aegistudio.mcb.board;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +16,8 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import net.aegistudio.mcb.MapCircuitBoard;
+import net.aegistudio.mcb.layout.SchemeCanvas;
 import net.aegistudio.mpp.export.PluginCanvasRegistry;
 
 public class CircuitBoardItem implements Listener {

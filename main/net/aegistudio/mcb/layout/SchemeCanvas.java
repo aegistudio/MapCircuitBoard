@@ -1,4 +1,4 @@
-package net.aegistudio.mcb.bukkit;
+package net.aegistudio.mcb.layout;
 
 import java.awt.Color;
 import java.io.InputStream;
@@ -7,7 +7,7 @@ import java.io.OutputStream;
 import org.bukkit.entity.Player;
 
 import net.aegistudio.mcb.Cell;
-import net.aegistudio.mcb.layout.LayoutGrid;
+import net.aegistudio.mcb.MapCircuitBoard;
 import net.aegistudio.mpp.Interaction;
 import net.aegistudio.mpp.export.Context;
 import net.aegistudio.mpp.export.PluginCanvas;

@@ -1,5 +1,5 @@
 name: MapCircuitBoard
-main: net.aegistudio.mcb.bukkit.MapCircuitBoard
+main: net.aegistudio.mcb.MapCircuitBoard
 version: 1.0
 author: aegistudio
 softdepend: [MapPainting]

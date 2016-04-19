@@ -1,4 +1,4 @@
-package net.aegistudio.mcb.bukkit;
+package net.aegistudio.mcb.layout;
 
 import java.util.ArrayList;
 import java.util.HashMap;
