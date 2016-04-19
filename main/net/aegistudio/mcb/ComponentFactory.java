@@ -7,6 +7,8 @@ import java.util.function.Consumer;
 
 import net.aegistudio.mcb.unit.Button;
 import net.aegistudio.mcb.unit.Lever;
+import net.aegistudio.mcb.unit.MonitorPin;
+import net.aegistudio.mcb.unit.OriginatorPin;
 import net.aegistudio.mcb.unit.Torch;
 import net.aegistudio.mcb.wire.FullDirectionalWire;
 
@@ -19,6 +21,8 @@ public class ComponentFactory {
 		Facing.all(face -> instance.add(Torch.INSTANCES[face.ordinal()]));
 		instance.add(Lever.INSTANCE);
 		instance.add(Button.INSTANCE);
+		instance.add(MonitorPin.INSTANCE);
+		instance.add(OriginatorPin.INSTANCE);
 	}
 	
 	public int id(Component component) {

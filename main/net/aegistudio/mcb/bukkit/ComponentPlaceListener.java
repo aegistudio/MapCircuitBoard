@@ -28,10 +28,18 @@ public class ComponentPlaceListener {
 		reverseMap.put(placer.component, placer);
 	}
 	
-	public void interact(Grid grid, int row, int column, Player player) {
-		Component previousComponent = null;
+	public void unplace(Grid grid, int row, int column, Player player) {
 		Cell previous = grid.getCell(row, column);
-		if(previous != null) previousComponent = previous.getComponent();
+		if(previous == null) return;
+		Component previousComponent = previous.getComponent();
+		
+		reverseMap.get(previousComponent).unplace(grid, player, row, column);
+		grid.setCell(row, column, null);
+	}
+	
+	public void place(Grid grid, int row, int column, Player player) {
+		Cell previous = grid.getCell(row, column);
+		if(previous != null) return;
 		
 		@SuppressWarnings("deprecation")
 		ItemStack item = player.getItemInHand();
@@ -40,21 +48,10 @@ public class ComponentPlaceListener {
 			if(suspicious != null)
 				for(ComponentPlacer placer : suspicious)
 					if(placer.matches(item)) {
-						onPlace(grid, row, column, player, previousComponent, placer);
+						placer.place(grid, player, row, column);
+						grid.setCell(row, column, placer.component);
 						return ;
 					}
 		}
-		onPlace(grid, row, column, player, 
-				previousComponent, placers.get(Material.AIR).get(0));
-	}
-	
-	protected void onPlace(Grid grid, int row, int column, 
-			Player player, Component previousComponent, ComponentPlacer placer) {
-		if(previousComponent == placer.component) return;
-		if(previousComponent != null)
-			reverseMap.get(previousComponent).repay(player);
-		
-		placer.place(grid, player, row, column);
-		grid.setCell(row, column, placer.component);
 	}
 }

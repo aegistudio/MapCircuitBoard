@@ -41,17 +41,20 @@ public class Torch implements Unit {
 		cell.getGrid().setCell(cell.getRow(), cell.getColumn(), Torch.INSTANCES[newQuad.ordinal()]);
 	}
 
+	public static final Color ACTIVATED = new Color(1.0f, 0.0f, 0.0f);
+	public static final Color DEACTIVATED = new Color(0.2f, 0.0f, 0.0f);
+	
 	@Override
 	public void paint(Cell cell, Paintable paintable) {
 		paintable.color(cell.getLevel(inputSide.opposite()) != 0? 
-				Color.YELLOW : Color.BLACK);
+				ACTIVATED : DEACTIVATED);
 		
-		for(int i = 0; i < 4; i ++) 
-			for(int j = 0; j < 4; j ++)
+		for(int i = 1; i <= 2; i ++) 
+			for(int j = 1; j <= 2; j ++)
 				paintable.set(i, j);
 		
-		paintable.color(Color.GREEN);
-		inputSide.side((i, j) -> paintable.set(i, j));
+		paintable.color(Color.GRAY.darker());
+		inputSide.side((i, j) -> paintable.set(i, j), 1, 2);
 	}
 	
 	@Override

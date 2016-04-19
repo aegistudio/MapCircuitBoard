@@ -13,6 +13,8 @@ import net.aegistudio.mcb.Air;
 import net.aegistudio.mcb.ComponentFactory;
 import net.aegistudio.mcb.unit.Button;
 import net.aegistudio.mcb.unit.Lever;
+import net.aegistudio.mcb.unit.MonitorPin;
+import net.aegistudio.mcb.unit.OriginatorPin;
 import net.aegistudio.mcb.unit.Torch;
 import net.aegistudio.mcb.wire.FullDirectionalWire;
 import net.aegistudio.mpp.export.CanvasCommandHandle;
@@ -44,6 +46,8 @@ public class MapCircuitBoard extends JavaPlugin {
 		factory.all(Torch.class, torch -> placeListener.add(new ComponentPlacer(Material.REDSTONE_TORCH_ON, torch)));
 		placeListener.add(new ComponentPlacer(Material.LEVER, factory.get(factory.id(Lever.class))));
 		placeListener.add(new ComponentPlacer(Material.WOOD_BUTTON, factory.get(factory.id(Button.class))));
+		placeListener.add(new ComponentPlacer(Material.STONE_BUTTON, factory.get(factory.id(MonitorPin.class))));
+		placeListener.add(new ComponentPlacer(Material.STONE_BUTTON, factory.get(factory.id(OriginatorPin.class))));
 		
 		try {
 			canvasService = super.getServer().getServicesManager()

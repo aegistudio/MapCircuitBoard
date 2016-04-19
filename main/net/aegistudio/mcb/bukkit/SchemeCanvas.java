@@ -29,6 +29,8 @@ public class SchemeCanvas implements PluginCanvas {
 
 	@Override
 	public boolean interact(Interaction i) {
+		if(!(i.sender instanceof Player)) return true;
+		System.out.println(i);
 		int row = i.y / 4;	int column = i.x / 4;
 		if(i.rightHanded) {
 			// Interacting
@@ -37,20 +39,18 @@ public class SchemeCanvas implements PluginCanvas {
 				target.getComponent().interact(target, i);
 				repaint();
 			}
-			else if(i.sender instanceof Player) {
+			else {
 				// Placing while air.
-				plugin.placeListener.interact(scheme, row, 
+				plugin.placeListener.place(scheme, row, 
 						column, (Player)i.sender);
 				repaint();
 			}
 		}
 		else {
 			// Placing / Replacing
-			if(i.sender instanceof Player) {
-				plugin.placeListener.interact(scheme, 
-						row, column, (Player) i.sender);
-				repaint();
-			}
+			plugin.placeListener.unplace(scheme, 
+					row, column, (Player) i.sender);
+			repaint();
 		}
 		return true;
 	}

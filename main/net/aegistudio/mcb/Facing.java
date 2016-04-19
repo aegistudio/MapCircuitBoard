@@ -69,8 +69,8 @@ public enum Facing implements Data {
 		return this;
 	}
 	
-	public void side(BiConsumer<Integer, Integer> consumer) {
-		for(int i = 0; i < 4; i ++)
+	public void side(BiConsumer<Integer, Integer> consumer, int begin, int end) {
+		for(int i = begin; i <= end; i ++)
 			if(this.offsetColumn == 0) {
 				consumer.accept(i, this.offsetRow > 0? 3 : 0);
 			}
