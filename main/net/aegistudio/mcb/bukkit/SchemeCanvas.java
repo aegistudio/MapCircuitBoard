@@ -30,7 +30,6 @@ public class SchemeCanvas implements PluginCanvas {
 	@Override
 	public boolean interact(Interaction i) {
 		if(!(i.sender instanceof Player)) return true;
-		System.out.println(i);
 		int row = i.y / 4;	int column = i.x / 4;
 		if(i.rightHanded) {
 			// Interacting
