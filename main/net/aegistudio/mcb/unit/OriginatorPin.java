@@ -57,6 +57,6 @@ public class OriginatorPin implements Pin {
 
 	@Override
 	public int getPinVoltage(Cell cell) {
-		return 0;
+		return -1;
 	}
 }

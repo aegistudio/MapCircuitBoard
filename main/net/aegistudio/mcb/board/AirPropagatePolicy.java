@@ -8,15 +8,20 @@ import net.aegistudio.mcb.Facing;
 
 public class AirPropagatePolicy implements PropagatePolicy{
 	@Override
-	public void in(Location location, Facing side, CircuitBoardCanvas canvas) {
+	public boolean in(Location location, Facing side, CircuitBoardCanvas canvas) {
 		Block block = location.getBlock();
-		if(block.getType() != Material.AIR) return;
+		if(block.getType() != Material.AIR) return false;
 		
 		new Propagator().propagateVoltage(canvas.grid, side);
+		return true;
 	}
 
 	@Override
-	public void out(Location location, Facing face, CircuitBoardCanvas canvas) {
+	public boolean out(Location location, Facing face, CircuitBoardCanvas canvas) {
 		// Do nothing.
+		Block block = location.getBlock();
+		if(block.getType() != Material.AIR) return false;
+		
+		return true;
 	}
 }

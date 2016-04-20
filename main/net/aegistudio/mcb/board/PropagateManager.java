@@ -12,16 +12,21 @@ public class PropagateManager implements PropagatePolicy {
 	public Collection<PropagatePolicy> propagates; {
 		propagates = new ArrayList<PropagatePolicy>();
 		propagates.add(new BlockPropagatePolicy());
+		propagates.add(new BoardPropagatePolicy());
 		propagates.add(new AirPropagatePolicy());
 	}
 	
 	@Override
-	public void in(Location location, Facing face, CircuitBoardCanvas canvas) {
-		propagates.forEach((p) -> p.in(location, face, canvas));
+	public boolean in(Location location, Facing face, CircuitBoardCanvas canvas) {
+		for(PropagatePolicy policy : propagates)
+			if(policy.in(location, face, canvas)) return true;
+		return false;
 	}
 
 	@Override
-	public void out(Location location, Facing face, CircuitBoardCanvas canvas) {
-		propagates.forEach((p) -> p.out(location, face, canvas));
+	public boolean out(Location location, Facing face, CircuitBoardCanvas canvas) {
+		for(PropagatePolicy policy : propagates)
+			if(policy.out(location, face, canvas)) return true;
+		return false;
 	}
 }

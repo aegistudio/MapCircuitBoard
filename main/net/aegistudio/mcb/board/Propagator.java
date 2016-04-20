@@ -31,7 +31,7 @@ public class Propagator {
 	}
 	
 	public int getVoltage() {
-		int max = 0;
+		int max = -1;
 		for(int i = 0; i < 32; i ++) 
 			if(this.voltage[i] > max) max = this.voltage[i];
 		return max;
