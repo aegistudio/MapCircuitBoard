@@ -13,7 +13,7 @@
 	<property name="retrolambda" value="/home/luohaoran/Downloads/retrolambda-2.1.0.jar"/>
 	
 	<!-- Modify when Map Painting version changes -->
-	<property name="version" value="1.0.0"/>
+	<property name="version" value="1.1"/>
 	
 	<!-- Do not modify the following code -->
 	<property name="artifact" value="mapcircuitboard"/>
