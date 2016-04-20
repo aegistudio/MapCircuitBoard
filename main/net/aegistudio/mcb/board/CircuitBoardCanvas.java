@@ -193,11 +193,11 @@ public class CircuitBoardCanvas implements PluginCanvas, PlaceSensitive {
 	}
 	
 	public void propagateOut(ItemFrame frame, Facing face) {
-		plugin.propagate.out(transform(face, frame.getFacing(), frame.getLocation().clone()), face, this);
+		plugin.propagate.out(transform(face, frame.getFacing(), frame.getLocation().clone()), face, this, frame);
 	}
 	
 	public void propagateIn(ItemFrame frame, Facing face) {
-		plugin.propagate.in(transform(face, frame.getFacing(), frame.getLocation().clone()), face, this);
+		plugin.propagate.in(transform(face, frame.getFacing(), frame.getLocation().clone()), face, this, frame);
 	}
 	
 	@Override

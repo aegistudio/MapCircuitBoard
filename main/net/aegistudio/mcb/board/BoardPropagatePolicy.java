@@ -14,7 +14,7 @@ import net.aegistudio.mpp.export.PluginCanvasRegistry;
 public class BoardPropagatePolicy implements PropagatePolicy {
 
 	@Override
-	public boolean in(Location location, Facing face, CircuitBoardCanvas canvas) {
+	public boolean in(Location location, Facing face, CircuitBoardCanvas canvas, ItemFrame iframe) {
 		Collection<Entity> collection = location.getWorld().getNearbyEntities(location, 0.3, 0.3, 0.3);
 		
 		for(Entity entity : collection) {
@@ -35,7 +35,7 @@ public class BoardPropagatePolicy implements PropagatePolicy {
 	}
 
 	@Override
-	public boolean out(Location location, Facing face, CircuitBoardCanvas canvas) {
+	public boolean out(Location location, Facing face, CircuitBoardCanvas canvas, ItemFrame frame) {
 		return false;
 	}
 

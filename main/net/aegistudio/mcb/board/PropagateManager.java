@@ -4,29 +4,33 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import org.bukkit.Location;
+import org.bukkit.entity.ItemFrame;
 
 import net.aegistudio.mcb.Facing;
+import net.aegistudio.mcb.MapCircuitBoard;
 
 public class PropagateManager implements PropagatePolicy {
 	/** Using strategic pattern **/
-	public Collection<PropagatePolicy> propagates; {
+	public Collection<PropagatePolicy> propagates; 
+	
+	public PropagateManager(MapCircuitBoard plugin){
 		propagates = new ArrayList<PropagatePolicy>();
-		propagates.add(new BlockPropagatePolicy());
+		propagates.add(new BlockPropagatePolicy(plugin));
 		propagates.add(new BoardPropagatePolicy());
 		propagates.add(new AirPropagatePolicy());
 	}
 	
 	@Override
-	public boolean in(Location location, Facing face, CircuitBoardCanvas canvas) {
+	public boolean in(Location location, Facing face, CircuitBoardCanvas canvas, ItemFrame frame) {
 		for(PropagatePolicy policy : propagates)
-			if(policy.in(location, face, canvas)) return true;
+			if(policy.in(location, face, canvas, frame)) return true;
 		return false;
 	}
 
 	@Override
-	public boolean out(Location location, Facing face, CircuitBoardCanvas canvas) {
+	public boolean out(Location location, Facing face, CircuitBoardCanvas canvas, ItemFrame frame) {
 		for(PropagatePolicy policy : propagates)
-			if(policy.out(location, face, canvas)) return true;
+			if(policy.out(location, face, canvas, frame)) return true;
 		return false;
 	}
 }

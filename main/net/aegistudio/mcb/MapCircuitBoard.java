@@ -55,7 +55,7 @@ public class MapCircuitBoard extends JavaPlugin {
 		placeListener.add(new ComponentPlacer(Material.STONE_BUTTON, factory.get(factory.id(MonitorPin.class))));
 		placeListener.add(new ComponentPlacer(Material.STONE_BUTTON, factory.get(factory.id(OriginatorPin.class))));
 		
-		propagate = new PropagateManager();
+		propagate = new PropagateManager(this);
 		
 		try {
 			canvasService = super.getServer().getServicesManager()
