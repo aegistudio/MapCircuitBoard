@@ -11,6 +11,7 @@ import net.aegistudio.mcb.unit.MonitorPin;
 import net.aegistudio.mcb.unit.OriginatorPin;
 import net.aegistudio.mcb.unit.Torch;
 import net.aegistudio.mcb.wire.FullDirectionalWire;
+import net.aegistudio.mcb.wire.BiInsulatedWire;
 
 public class ComponentFactory {
 	private final ArrayList<Component> instance = new ArrayList<Component>();
@@ -23,6 +24,7 @@ public class ComponentFactory {
 		instance.add(Button.INSTANCE);
 		instance.add(MonitorPin.INSTANCE);
 		instance.add(OriginatorPin.INSTANCE);
+		for(BiInsulatedWire wire : BiInsulatedWire.INSTANCES) instance.add(wire);
 	}
 	
 	public int id(Component component) {

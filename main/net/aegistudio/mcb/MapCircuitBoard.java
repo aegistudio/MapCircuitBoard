@@ -20,6 +20,7 @@ import net.aegistudio.mcb.unit.Lever;
 import net.aegistudio.mcb.unit.MonitorPin;
 import net.aegistudio.mcb.unit.OriginatorPin;
 import net.aegistudio.mcb.unit.Torch;
+import net.aegistudio.mcb.wire.BiInsulatedWire;
 import net.aegistudio.mcb.wire.FullDirectionalWire;
 import net.aegistudio.mpp.export.CanvasCommandHandle;
 import net.aegistudio.mpp.export.PluginCanvasRegistry;
@@ -54,6 +55,7 @@ public class MapCircuitBoard extends JavaPlugin {
 		placeListener.add(new ComponentPlacer(Material.WOOD_BUTTON, factory.get(factory.id(Button.class))));
 		placeListener.add(new ComponentPlacer(Material.STONE_BUTTON, factory.get(factory.id(MonitorPin.class))));
 		placeListener.add(new ComponentPlacer(Material.STONE_BUTTON, factory.get(factory.id(OriginatorPin.class))));
+		factory.all(BiInsulatedWire.class, insulated -> placeListener.add(new ComponentPlacer(Material.POWERED_RAIL, insulated)));
 		
 		propagate = new PropagateManager(this);
 		
