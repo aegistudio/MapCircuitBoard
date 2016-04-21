@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import net.aegistudio.mcb.AbstractCell;
+import net.aegistudio.mcb.Cell;
 import net.aegistudio.mcb.ComponentFactory;
 import net.aegistudio.mcb.Data;
 import net.aegistudio.mcb.Facing;
@@ -13,6 +14,7 @@ import net.aegistudio.mcb.layout.LayoutUnitCell;
 import net.aegistudio.mcb.unit.Unit;
 
 public class ActualUnitCell extends AbstractCell<ActualGrid, Unit> {
+	public final int[] bufferedLevel = new int[Facing.values().length];
 	protected ActualUnitCell(ActualGrid grid, LayoutUnitCell cell) {
 		super(grid, cell.getRow(), cell.getColumn());
 		super.component = cell.getComponent();
@@ -34,7 +36,15 @@ public class ActualUnitCell extends AbstractCell<ActualGrid, Unit> {
 		for(Facing f : Facing.values()) dout.writeInt(super.getLevel(f));
 	}
 	
+	public int getLevel(Facing face) {
+		Cell cell = super.adjacence(face);
+		if(cell == null) return super.getLevel(face);
+		if(cell instanceof ActualUnitCell) return bufferedLevel[face.ordinal()];
+		return super.getLevel(face);
+	}
+	
 	public void tick() {
+		System.arraycopy(level, 0, bufferedLevel, 0, Facing.values().length);
 		super.component.tick(this);
 	}
 }

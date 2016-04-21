@@ -19,6 +19,7 @@ import net.aegistudio.mcb.unit.Button;
 import net.aegistudio.mcb.unit.Lever;
 import net.aegistudio.mcb.unit.MonitorPin;
 import net.aegistudio.mcb.unit.OriginatorPin;
+import net.aegistudio.mcb.unit.Repeater;
 import net.aegistudio.mcb.unit.Torch;
 import net.aegistudio.mcb.wire.BiInsulatedWire;
 import net.aegistudio.mcb.wire.FullDirectionalWire;
@@ -56,6 +57,7 @@ public class MapCircuitBoard extends JavaPlugin {
 		placeListener.add(new ComponentPlacer(Material.STONE_BUTTON, factory.get(factory.id(MonitorPin.class))));
 		placeListener.add(new ComponentPlacer(Material.STONE_BUTTON, factory.get(factory.id(OriginatorPin.class))));
 		factory.all(BiInsulatedWire.class, insulated -> placeListener.add(new ComponentPlacer(Material.POWERED_RAIL, insulated)));
+		factory.all(Repeater.class, repeater -> placeListener.add(new ComponentPlacer(Material.DIODE, repeater)));
 		
 		propagate = new PropagateManager(this);
 		

@@ -4,6 +4,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import net.aegistudio.mcb.AbstractCell;
+import net.aegistudio.mcb.Cell;
 import net.aegistudio.mcb.Facing;
 import net.aegistudio.mcb.layout.LayoutWireCell;
 import net.aegistudio.mcb.wire.Wire;
@@ -35,6 +36,11 @@ public class ActualWireCell extends AbstractCell<ActualGrid, Wire> {
 	public void save(OutputStream outputStream) throws Exception {	}
 	
 	public void tick() {
-		Facing.all((face)->super.setLevel(face, Short.MAX_VALUE));
+		Facing.all((face) -> super.setLevel(face, Short.MAX_VALUE));
+		Facing.all((face) -> {
+			Cell cell = super.adjacence(face);
+			if(cell == null) return;
+			if(cell instanceof ActualUnitCell) getLevel(face);
+		});
 	}
 }

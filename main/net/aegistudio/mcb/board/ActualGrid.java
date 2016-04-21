@@ -42,13 +42,13 @@ public class ActualGrid extends AbstractGrid {
 	}
 	
 	public void tick() {
-		this.all((r, c, cell, unit) -> {
-			cell.tick();
-		}, Unit.class);
-		
 		this.all((r, c, cell, wire) -> {
 			cell.tick();
 		}, Wire.class);
+		
+		this.all((r, c, cell, unit) -> {
+			cell.tick();
+		}, Unit.class);
 	}
 
 	public void load(InputStream inputStream, ComponentFactory table) throws Exception {
