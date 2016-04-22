@@ -86,6 +86,9 @@ public class Repeater implements Unit {
 		inputSide.side((i, j) -> paintable.set(i, j), 0, 3, 3);
 		inputSide.side((i, j) -> paintable.set(i + 1, j + 1), 0, 1, 1);
 		
+		paintable.color(new Color(0, hatched(cell)? 0 : 1.f - 0.8f * tick / 4, 0));
+		inputSide.opposite().side((i, j) -> paintable.set(i + 1, j + 1), 0, 1, 1);
+		
 		paintable.color(cell.getData(RepeaterQueue.class)
 				.powered(powerMask)? ACTIVATED : DEACTIVATED);
 		inputSide.opposite().side((i, j) -> paintable.set(i, j), 1, 2, 3);
@@ -94,17 +97,32 @@ public class Repeater implements Unit {
 	@Override
 	public void tick(Cell cell) {
 		RepeaterQueue data = cell.getData(RepeaterQueue.class);
-
-		Cell adjCell = cell.adjacence(inputSide);
-		int level = 0;
-		if(adjCell != null) 
-			level = adjCell.getLevel(inputSide.opposite());
-		data.enqueue(level != 0, queueMask);
+		if(!hatched(cell)) {
+			Cell adjCell = cell.adjacence(inputSide);
+			int level = 0;
+			if(adjCell != null) 
+				level = adjCell.getLevel(inputSide.opposite());
+			data.enqueue(level != 0, queueMask);
+		}
 		
 		for(Facing face : Facing.values()) {
 			if(face == inputSide.opposite())
 				cell.setLevel(face, data.powered(powerMask)? 32 : 0);
 			else cell.setLevel(face, 0);
 		}
+	}
+	
+	public boolean hatched(Cell cell) {
+		Cell prevCell = cell.adjacence(inputSide.previousQuad());
+		if(prevCell != null)
+			if(prevCell.getComponent() instanceof Repeater)
+				if(prevCell.getLevel(inputSide.nextQuad()) > 0) return true;
+		
+		Cell nextCell = cell.adjacence(inputSide.nextQuad());
+		if(nextCell != null)
+			if(nextCell.getComponent() instanceof Repeater)
+				if(nextCell.getLevel(inputSide.previousQuad()) > 0) return true;
+		
+		return false;
 	}
 }
