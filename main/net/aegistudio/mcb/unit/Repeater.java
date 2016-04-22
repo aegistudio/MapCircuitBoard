@@ -113,12 +113,14 @@ public class Repeater implements Unit {
 	public boolean hatched(Cell cell) {
 		Cell prevCell = cell.adjacence(inputSide.previousQuad());
 		if(prevCell != null)
-			if(prevCell.getComponent() instanceof Repeater)
+			if(prevCell.getComponent() instanceof Repeater || 
+				prevCell.getComponent() instanceof Comparator)
 				if(prevCell.getLevel(inputSide.nextQuad()) > 0) return true;
 		
 		Cell nextCell = cell.adjacence(inputSide.nextQuad());
 		if(nextCell != null)
-			if(nextCell.getComponent() instanceof Repeater)
+			if(nextCell.getComponent() instanceof Repeater || 
+				nextCell.getComponent() instanceof Comparator)
 				if(nextCell.getLevel(inputSide.previousQuad()) > 0) return true;
 		
 		return false;
