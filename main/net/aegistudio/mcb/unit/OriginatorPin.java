@@ -41,6 +41,10 @@ public class OriginatorPin implements Pin {
 
 	@Override
 	public void paint(Cell cell, Paintable paintable) {
+		paintable.color(new Color(0.2f + 0.8f * cell.getData(Voltage.class).voltage / 32, 0, 0));
+		paintable.set(1, 1);		paintable.set(1, 2);
+		paintable.set(2, 1);		paintable.set(2, 2);
+		
 		paintable.color(Color.YELLOW.darker());
 		for(int i = 0; i <= 3; i ++) {
 			paintable.set(i, 0);
