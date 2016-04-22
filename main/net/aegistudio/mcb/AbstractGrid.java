@@ -36,8 +36,15 @@ public abstract class AbstractGrid implements Grid {
 			if(row == END_GRID) break;
 			int column = inputStream.read();
 			Cell cell = decode(inputStream.read(), row, column);
-			cell.load(inputStream, table);
-			this.cells[row][column] = cell;
+			try {
+				cell.load(inputStream, table);
+				this.cells[row][column] = cell;
+			}
+			catch(Exception e) {
+				// When it fails, print stack trace and set to air.
+				e.printStackTrace();
+				this.cells[row][column] = null;
+			}
 		}
 	}
 

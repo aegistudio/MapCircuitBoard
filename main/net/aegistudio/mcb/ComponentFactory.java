@@ -26,7 +26,12 @@ public class ComponentFactory {
 		instance.add(MonitorPin.INSTANCE);
 		instance.add(OriginatorPin.INSTANCE);
 		for(BiInsulatedWire wire : BiInsulatedWire.INSTANCES) instance.add(wire);
-		Facing.all(face -> instance.add(Repeater.INSTANCES[face.ordinal()]));
+		
+		// 4 tiers of repeaters.
+		Facing.all(face -> instance.add(Repeater.INSTANCES[face.ordinal()][0]));
+		Facing.all(face -> instance.add(Repeater.INSTANCES[face.ordinal()][1]));
+		Facing.all(face -> instance.add(Repeater.INSTANCES[face.ordinal()][2]));
+		Facing.all(face -> instance.add(Repeater.INSTANCES[face.ordinal()][3]));
 	}
 	
 	public int id(Component component) {

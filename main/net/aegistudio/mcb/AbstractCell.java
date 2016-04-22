@@ -42,7 +42,15 @@ public abstract class AbstractCell<G extends Grid, C extends Component> implemen
 	public void load(InputStream input, ComponentFactory table) throws Exception {
 		DataInputStream din = new DataInputStream(input);
 		this.component = (C) table.get(din.readShort());
-		this.component.load(this, input);
+		try {
+			this.component.load(this, input);
+		}
+		catch(Exception e) {
+			// Print error when the component fails to load.
+			// And init it with a default value.
+			e.printStackTrace();
+			this.component.init(this);
+		}
 	}
 
 	@Override
