@@ -2,6 +2,7 @@ package net.aegistudio.mcb.board;
 
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -21,7 +22,12 @@ public class BlockPropagatePolicy implements PropagatePolicy {
 	
 	public BlockPropagatePolicy(MapCircuitBoard circuitBoard) {
 		circuitBoard.getServer().getPluginManager()
-			.registerEvents(new TorchPowerListener(circuitBoard), circuitBoard);
+			.registerEvents(new SimplePowerListener(Material.REDSTONE_TORCH_OFF, i -> i != 0, circuitBoard), circuitBoard);
+		circuitBoard.getServer().getPluginManager()
+			.registerEvents(new SimplePowerListener(Material.DIODE_BLOCK_ON, i -> i == 0, circuitBoard), circuitBoard);
+		//circuitBoard.getServer().getPluginManager()
+		//	.registerEvents(new SimplePowerListener(Material.REDSTONE_COMPARATOR_ON, i -> i == 0, circuitBoard), circuitBoard);
+		
 		circuitBoard.getServer().getPluginManager()
 			.registerEvents(new LampPowerListener(circuitBoard), circuitBoard);
 		
@@ -62,21 +68,47 @@ public class BlockPropagatePolicy implements PropagatePolicy {
 	public void setBlockPower(Location from, Block block, int power, boolean cascade) {
 		Consumer<BlockState> redstoneInventory = null;		// Used only in Dropper and Dispenser.
 		
+		Function<Integer, Material> redstoneOnOff = null;
+		Function<Integer, Integer> shouldPower = null;		// Used only in comparator, repeater and torch.
+		
 		switch(block.getType()) {
 			case REDSTONE_WIRE:
 				block.setData((byte)Math.min(15, power));
 			break;
 			
+			//case REDSTONE_COMPARATOR_OFF:
+			//case REDSTONE_COMPARATOR_ON:
+			//	if(redstoneOnOff == null)
+			//		redstoneOnOff = p -> p > 0? 
+			//				Material.REDSTONE_COMPARATOR_ON:
+			//				Material.REDSTONE_COMPARATOR_OFF;
+			//	if(shouldPower == null)
+			//		shouldPower = p -> p > 0? 15 : 0;
+				
+			case DIODE_BLOCK_OFF:
+			case DIODE_BLOCK_ON:
+				if(redstoneOnOff == null)
+					redstoneOnOff = p -> p > 0? 
+							Material.DIODE_BLOCK_ON:
+							Material.DIODE_BLOCK_OFF;
+				if(shouldPower == null)
+					shouldPower = p -> p > 0? 15 : 0;
+					
 			case REDSTONE_TORCH_ON:
 			case REDSTONE_TORCH_OFF:
+				if(redstoneOnOff == null)
+					redstoneOnOff = p -> p > 0? 
+							Material.REDSTONE_TORCH_OFF:
+							Material.REDSTONE_TORCH_ON;
+				if(shouldPower == null)
+						shouldPower = p -> p > 0? 0 : 15;
+					
 				byte meta = block.getData();
 				
-				block.setTypeIdAndData((power > 0? 
-					Material.REDSTONE_TORCH_OFF: 
-					Material.REDSTONE_TORCH_ON).getId(), meta, true);
+				block.setTypeIdAndData(redstoneOnOff.apply(power).getId(), meta, true);
 				
 				block = block.getLocation().getBlock();
-				block.setMetadata(REDSTONE_STATE, new FixedMetadataValue(plugin, power > 0? 0 : 15));
+				block.setMetadata(REDSTONE_STATE, new FixedMetadataValue(plugin, shouldPower.apply(power)));
 			break;
 
 			case WOODEN_DOOR:
