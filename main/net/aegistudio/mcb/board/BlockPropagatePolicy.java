@@ -31,6 +31,10 @@ public class BlockPropagatePolicy implements PropagatePolicy {
 		circuitBoard.getServer().getPluginManager()
 			.registerEvents(new LampPowerListener(circuitBoard), circuitBoard);
 		
+		// Maybe the predictor could be optimized.
+		circuitBoard.getServer().getPluginManager()
+			.registerEvents(new SimplePowerListener(Material.REDSTONE_WIRE, i -> true, circuitBoard), circuitBoard);
+		
 		this.plugin = circuitBoard;
 	}
 	
@@ -73,7 +77,9 @@ public class BlockPropagatePolicy implements PropagatePolicy {
 		
 		switch(block.getType()) {
 			case REDSTONE_WIRE:
-				block.setData((byte)Math.min(15, power));
+				System.out.println(block);
+				block.setData((byte)Math.min(15, power), true);
+				block.setMetadata(REDSTONE_STATE, new FixedMetadataValue(plugin, Math.min(15, power)));
 			break;
 			
 			//case REDSTONE_COMPARATOR_OFF:
