@@ -43,8 +43,11 @@ public class ActualUnitCell extends AbstractCell<ActualGrid, Unit> {
 		return super.getLevel(face);
 	}
 	
-	public void tick() {
+	public void backupLevel() {
 		System.arraycopy(level, 0, bufferedLevel, 0, Facing.values().length);
+	}
+	
+	public void tick() {
 		super.component.tick(this);
 	}
 }

@@ -47,6 +47,10 @@ public class ActualGrid extends AbstractGrid {
 		}, Wire.class);
 		
 		this.all((r, c, cell, unit) -> {
+			((ActualUnitCell)cell).backupLevel();
+		}, Unit.class);
+		
+		this.all((r, c, cell, unit) -> {
 			cell.tick();
 		}, Unit.class);
 	}
