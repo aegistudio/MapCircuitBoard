@@ -64,13 +64,11 @@ public class BlockPropagatePolicy implements PropagatePolicy {
 			case REDSTONE_TORCH_OFF:
 				byte meta = block.getData();
 				
-				block.setType(power > 0? 
+				block.setTypeIdAndData((power > 0? 
 					Material.REDSTONE_TORCH_OFF: 
-					Material.REDSTONE_TORCH_ON, true);
+					Material.REDSTONE_TORCH_ON).getId(), meta, true);
 				
 				block = block.getLocation().getBlock();
-				
-				block.setData(meta, true);
 				block.setMetadata(REDSTONE_STATE, new FixedMetadataValue(plugin, power > 0? 0 : 15));
 			break;
 
