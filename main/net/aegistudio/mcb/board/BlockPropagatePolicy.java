@@ -77,7 +77,6 @@ public class BlockPropagatePolicy implements PropagatePolicy {
 		
 		switch(block.getType()) {
 			case REDSTONE_WIRE:
-				System.out.println(block);
 				block.setData((byte)Math.min(15, power), true);
 				block.setMetadata(REDSTONE_STATE, new FixedMetadataValue(plugin, Math.min(15, power)));
 			break;
