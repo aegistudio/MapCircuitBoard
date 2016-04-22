@@ -1,10 +1,15 @@
 package net.aegistudio.mcb.board;
 
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Dispenser;
+import org.bukkit.block.Dropper;
 import org.bukkit.entity.ItemFrame;
 import org.bukkit.metadata.FixedMetadataValue;
 
@@ -55,6 +60,8 @@ public class BlockPropagatePolicy implements PropagatePolicy {
 	
 	@SuppressWarnings("deprecation")
 	public void setBlockPower(Location from, Block block, int power, boolean cascade) {
+		Consumer<BlockState> redstoneInventory = null;		// Used only in Dropper and Dispenser.
+		
 		switch(block.getType()) {
 			case REDSTONE_WIRE:
 				block.setData((byte)Math.min(15, power));
@@ -82,11 +89,16 @@ public class BlockPropagatePolicy implements PropagatePolicy {
 				block.setData((byte) ((data & 0x03) | (power != 0? 4 : 0)));
 			break;
 			
+			case DROPPER:
+				if(redstoneInventory == null)
+					redstoneInventory = state -> ((Dropper)state).drop();
 			case DISPENSER:
-				Dispenser state = (Dispenser) block.getState();
-				if(block.getData() == 4 && power > 0)
-					state.dispense();
-				block.setData((byte)(power > 0? 12 : 4));
+				if(redstoneInventory == null)
+					redstoneInventory = state -> ((Dispenser)state).dispense();
+			
+				if(block.getData() < 8 && power > 0)
+					redstoneInventory.accept(block.getState());
+				block.setData((byte)((power > 0? 8 : 0) | (0x07 & block.getData())));
 			break;
 			
 			case REDSTONE_LAMP_ON:
@@ -109,9 +121,30 @@ public class BlockPropagatePolicy implements PropagatePolicy {
 				block.setMetadata(REDSTONE_STATE, new FixedMetadataValue(plugin, power));
 			break;
 			
+			case PISTON_BASE:
+			case PISTON_STICKY_BASE:
+			break;
+			
 			default:
-				
 			break;
 		}
+		
+		if(cascade) {
+			if(!block.getType().isTransparent()) {
+				BiConsumer<BlockFace, Location> offset =
+						(b, l) -> {
+							Location target = l.clone().add(b.getModX(), b.getModY(), b.getModZ());
+							setBlockPower(l, target.getBlock(), power, false);
+						};
+						
+				offset.accept(BlockFace.UP, block.getLocation());
+				offset.accept(BlockFace.DOWN, block.getLocation());
+				offset.accept(BlockFace.EAST, block.getLocation());
+				offset.accept(BlockFace.WEST, block.getLocation());
+				offset.accept(BlockFace.NORTH, block.getLocation());
+				offset.accept(BlockFace.SOUTH, block.getLocation());
+			}
+		}
 	}
+	
 }
