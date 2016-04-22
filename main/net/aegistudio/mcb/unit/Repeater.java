@@ -58,10 +58,8 @@ public class Repeater implements Unit {
 		Component newComponent;
 		if(tickChange)
 			newComponent = Repeater.INSTANCES[inputSide.ordinal()][(tick + 1) % 4];
-		else {
-			Facing newQuad = interaction.rightHanded? inputSide.nextQuad() : inputSide.previousQuad();
-			newComponent = Repeater.INSTANCES[newQuad.ordinal()][tick];
-		}
+		else
+			newComponent = Repeater.INSTANCES[inputSide.nextQuad().ordinal()][tick];
 		
 		cell.getGrid().setCell(cell.getRow(), cell.getColumn(), newComponent);
 	}

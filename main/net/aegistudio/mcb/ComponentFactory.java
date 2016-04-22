@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import net.aegistudio.mcb.unit.Button;
+import net.aegistudio.mcb.unit.Comparator;
 import net.aegistudio.mcb.unit.Lever;
 import net.aegistudio.mcb.unit.MonitorPin;
 import net.aegistudio.mcb.unit.OriginatorPin;
@@ -32,6 +33,9 @@ public class ComponentFactory {
 		Facing.all(face -> instance.add(Repeater.INSTANCES[face.ordinal()][1]));
 		Facing.all(face -> instance.add(Repeater.INSTANCES[face.ordinal()][2]));
 		Facing.all(face -> instance.add(Repeater.INSTANCES[face.ordinal()][3]));
+		
+		Facing.all(face -> instance.add(Comparator.INSTANCES[face.ordinal()][0]));
+		Facing.all(face -> instance.add(Comparator.INSTANCES[face.ordinal()][1]));
 	}
 	
 	public int id(Component component) {
