@@ -7,7 +7,7 @@ public class Synchronous implements Clocking {
 	@Override
 	public void start(MapCircuitBoard plugin) {
 		task = plugin.getServer().getScheduler()
-			.scheduleSyncRepeatingTask(plugin, () -> plugin.clock(), 1, 0);
+			.scheduleSyncRepeatingTask(plugin, () -> plugin.clock(), 1, 1);
 	}
 
 	@Override

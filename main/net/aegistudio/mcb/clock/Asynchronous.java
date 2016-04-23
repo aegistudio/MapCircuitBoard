@@ -9,7 +9,7 @@ public class Asynchronous implements Clocking {
 	@Override
 	public void start(MapCircuitBoard plugin) {
 		task = plugin.getServer().getScheduler()
-			.scheduleAsyncRepeatingTask(plugin, () -> plugin.clock(), 1, 0);
+			.scheduleAsyncRepeatingTask(plugin, () -> plugin.clock(), 1, 1);
 	}
 
 	@Override
