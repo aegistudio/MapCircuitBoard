@@ -208,7 +208,7 @@ public class MapCircuitBoard extends JavaPlugin {
 		}
 		
 		public void run() {
-			this.consumer.accept(canvas);
+			try {	this.consumer.accept(canvas);	} catch(Throwable t) {}
 		}
 	}
 }
