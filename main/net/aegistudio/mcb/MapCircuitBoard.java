@@ -16,6 +16,9 @@ import org.mcstats.Metrics;
 import net.aegistudio.mcb.board.CircuitBoardCanvas;
 import net.aegistudio.mcb.board.CircuitBoardItem;
 import net.aegistudio.mcb.board.PropagateManager;
+import net.aegistudio.mcb.clock.Asynchronous;
+import net.aegistudio.mcb.clock.Clocking;
+import net.aegistudio.mcb.clock.Synchronous;
 import net.aegistudio.mcb.layout.ComponentPlaceListener;
 import net.aegistudio.mcb.layout.ComponentPlacer;
 import net.aegistudio.mcb.layout.SchemeCanvas;
@@ -128,8 +131,12 @@ public class MapCircuitBoard extends JavaPlugin {
 		}
 		
 		this.load();
-		
-		this.getServer().getScheduler().scheduleSyncRepeatingTask(this, () -> clock(), 1, 0);
+	
+		clocking.start(this);
+	}
+	
+	public void onDisable() {
+		clocking.stop(this);
 	}
 	
 	public void load() {
@@ -140,11 +147,28 @@ public class MapCircuitBoard extends JavaPlugin {
 			internalTick = config.getInt(INTERNAL_TICK);
 		else config.set(INTERNAL_TICK, internalTick);
 		
+		
+		if(config.contains(POLICY)) 
+			policy = config.getString(POLICY);
+		else config.set(POLICY, policy);
+		
+		switch(policy) {
+			case "async":
+				clocking = new Asynchronous();
+			default:
+				clocking = new Synchronous();
+		}
+		
 		this.saveConfig();
 	}
 	
 	public static final String INTERNAL_TICK = "internalTick";
 	public int internalTick = 1;
+	
+	public static final String POLICY = "policy";
+	public String policy = "sync";
+	public Clocking clocking;
+	
 	public void clock() {
 		forCircuitBoards(redstone -> {if(redstone.frame == null) redstone.whereami();});
 		for(int i = 0; i < internalTick; i ++) {
