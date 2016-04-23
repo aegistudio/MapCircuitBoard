@@ -66,6 +66,11 @@ public class CircuitBoardItem implements Listener {
 		
 		PluginCanvasRegistry<SchemeCanvas> scheme = parse(event.getItem());
 		if(scheme == null) return;
+		if(!event.getPlayer().hasPermission("mcb.circuit")) {
+			event.getPlayer().sendMessage(ChatColor.RED + "You don't have permission to deploy the circuit board.");
+			event.setCancelled(true);
+			return;
+		}
 		
 		PluginCanvasRegistry<CircuitBoardCanvas> board = null;
 		try {

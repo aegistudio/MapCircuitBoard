@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.TreeMap;
 import java.util.function.Consumer;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -94,7 +95,10 @@ public class MapCircuitBoard extends JavaPlugin {
 				
 				public @Override boolean handle(MapCircuitBoard arg0, CommandSender arg1, 
 						String[] arg2, SchemeCanvas arg3) {
-					return true;
+					if(arg1.hasPermission("mcb.scheme"))
+						return true;
+					arg1.sendMessage(ChatColor.RED + "You don't have permission to create a scheme.");
+					return false;
 				}
 				
 				public @Override String paramList() {	return "";	}
@@ -102,10 +106,15 @@ public class MapCircuitBoard extends JavaPlugin {
 			
 			commandService.registerControl(this, "create/circuit", "scheme", SchemeCanvas.class, 
 					new CanvasCommandHandle<MapCircuitBoard, SchemeCanvas>() {
-				public @Override String description() {		return "get a circuit board item!";		}
+				public @Override String description() {		return "obtain a circuit board item!";		}
 				
 				public @Override boolean handle(MapCircuitBoard arg0, CommandSender arg1, String[] arg2, SchemeCanvas arg3) {
 					if(!(arg1 instanceof Player)) return false;
+					if(!arg1.hasPermission("mcb.circuit")) {
+						arg1.sendMessage(ChatColor.RED + "You don't have permission to obtain a circuit board.");
+						return true;
+					}
+					
 					ItemStack boardItem = new ItemStack(Material.MAP, 1);
 					circuitBoardItem.make(boardItem, arg3.registry);
 					Player player = (Player) arg1;

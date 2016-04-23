@@ -1,5 +1,12 @@
 name: MapCircuitBoard
 main: net.aegistudio.mcb.MapCircuitBoard
-version: 1.2
+version: 1.3
 author: aegistudio
 softdepend: [MapPainting]
+permissions:
+  mcb.scheme:
+    description: Grants player to create a scheme
+    default: op
+  mcb.circuit:
+    description: Grants player to obtain or deploy a circuit board
+    default: op
