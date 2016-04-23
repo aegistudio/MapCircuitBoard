@@ -1,6 +1,7 @@
 package net.aegistudio.mcb;
 
 import java.util.TreeMap;
+import java.util.function.Consumer;
 
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
@@ -143,15 +144,16 @@ public class MapCircuitBoard extends JavaPlugin {
 	public static final String INTERNAL_TICK = "internalTick";
 	public int internalTick = 1;
 	public void clock() {
-		canvasService.getPluginCanvases(this, "redstone", CircuitBoardCanvas.class)
-			.forEach(redstone -> {if(redstone.canvas().frame == null) redstone.canvas().whereami();});
+		forCircuitBoards(redstone -> {if(redstone.frame == null) redstone.whereami();});
 		for(int i = 0; i < internalTick; i ++) {
-			canvasService.getPluginCanvases(this, "redstone", CircuitBoardCanvas.class)
-				.forEach(redstone -> redstone.canvas().propagateIn());
-			canvasService.getPluginCanvases(this, "redstone", CircuitBoardCanvas.class)
-				.forEach(redstone -> redstone.canvas().clockTick());
-			canvasService.getPluginCanvases(this, "redstone", CircuitBoardCanvas.class)
-				.forEach(redstone -> redstone.canvas().propagateOut());
+			forCircuitBoards(redstone -> redstone.propagateIn());
+			forCircuitBoards(redstone -> redstone.clockTick());
+			forCircuitBoards(redstone -> redstone.propagateOut());
 		}
+	}
+	
+	public void forCircuitBoards(Consumer<CircuitBoardCanvas> todo) {
+		canvasService.getPluginCanvases(this, "redstone", CircuitBoardCanvas.class)
+			.forEach(redstone -> todo.accept(redstone.canvas()));
 	}
 }
