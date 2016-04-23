@@ -1,5 +1,7 @@
 package net.aegistudio.mcb;
 
+import java.util.Deque;
+import java.util.LinkedList;
 import java.util.TreeMap;
 import java.util.function.Consumer;
 
@@ -153,7 +155,27 @@ public class MapCircuitBoard extends JavaPlugin {
 	}
 	
 	public void forCircuitBoards(Consumer<CircuitBoardCanvas> todo) {
-		canvasService.getPluginCanvases(this, "redstone", CircuitBoardCanvas.class)
-			.forEach(redstone -> todo.accept(redstone.canvas()));
+		Deque<WorkingThread> workingThreadQueue = new LinkedList<WorkingThread>();
+		for(PluginCanvasRegistry<CircuitBoardCanvas> redstone : 
+			canvasService.getPluginCanvases(this, "redstone", CircuitBoardCanvas.class)) {
+				WorkingThread thread = new WorkingThread(todo, redstone.canvas());
+				workingThreadQueue.addFirst(thread);
+				thread.start();
+		}
+		for(WorkingThread thread : workingThreadQueue)
+			try { thread.join(); } catch(Exception e) {	e.printStackTrace(); }
+	}
+	
+	class WorkingThread extends Thread{
+		private final Consumer<CircuitBoardCanvas> consumer;
+		private final CircuitBoardCanvas canvas;
+		public WorkingThread(Consumer<CircuitBoardCanvas> consumer, CircuitBoardCanvas canvas) {
+			this.consumer = consumer;
+			this.canvas = canvas;
+		}
+		
+		public void run() {
+			this.consumer.accept(canvas);
+		}
 	}
 }
