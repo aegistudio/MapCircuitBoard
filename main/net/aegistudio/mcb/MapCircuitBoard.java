@@ -1,13 +1,16 @@
 package net.aegistudio.mcb;
 
+import java.net.URL;
 import java.util.Deque;
 import java.util.LinkedList;
+import java.util.Properties;
 import java.util.TreeMap;
 import java.util.function.Consumer;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -142,6 +145,45 @@ public class MapCircuitBoard extends JavaPlugin {
 		this.load();
 	
 		clocking.start(this);
+		
+	    /**
+	     * Check whether there's new version of this plugin.
+	     */
+
+		new Thread(() -> {
+	    	String currentVersion = this.getDescription().getVersion();
+		    try {
+		    	URL masterUrl = new URL("https://raw.githubusercontent.com/aegistudio/MapCircuitBoard/master/build.properties");
+		    	Properties masterBuild = new Properties();
+		    	masterBuild.load(masterUrl.openConnection().getInputStream());
+		    	String masterVersion = masterBuild.getProperty("version");
+	
+		    	if(!masterVersion.equals(currentVersion)) {
+		    		sendConsole(ChatColor.AQUA + "The newest version (" + ChatColor.GREEN + masterVersion + ChatColor.AQUA + ") has been published!");
+		    		
+		    		sendConsole(ChatColor.AQUA + "Downloads: ");
+		    		String downloadJava8 = masterBuild.getProperty("download.java8");
+		    		if(downloadJava8 != null) sendConsole(ChatColor.AQUA + "#   java8: " + 
+		    				ChatColor.GREEN + ChatColor.UNDERLINE + downloadJava8);
+		    		
+		    		String downloadJava7 = masterBuild.getProperty("download.java7");
+		    		if(downloadJava7 != null) sendConsole(ChatColor.AQUA + "#   java7: " + 
+		    				ChatColor.GREEN + ChatColor.UNDERLINE + downloadJava7);
+		    		
+		    		sendConsole(ChatColor.AQUA + "Forums: ");
+	    			sendConsole(ChatColor.AQUA + "#   spigotmc: " + ChatColor.GREEN + ChatColor.UNDERLINE + "https://www.spigotmc.org/resources/22074/");
+	    			sendConsole(ChatColor.AQUA + "#   mcbbs: " + ChatColor.GREEN + ChatColor.UNDERLINE + "http://www.mcbbs.net/thread-576750-1-1.html");
+		    	}
+		    	else sendConsole("Congratulations! The plugin is of the newest version now!");
+		    } catch(Exception e) {
+		    	sendConsole("Cannot fetch information of the newest version, I'm sorry. :-(");
+		    }
+		}).start();
+	}
+	
+	private void sendConsole(String data) {
+		ConsoleCommandSender console = this.getServer().getConsoleSender();
+		console.sendMessage("[" + this.getName() + "] " + data);
 	}
 	
 	public void onDisable() {
