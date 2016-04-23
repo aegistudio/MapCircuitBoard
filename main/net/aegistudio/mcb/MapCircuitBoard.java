@@ -4,6 +4,7 @@ import java.util.TreeMap;
 
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -43,7 +44,6 @@ public class MapCircuitBoard extends JavaPlugin {
 	public ComponentPlaceListener placeListener
 			= new ComponentPlaceListener();
 	
-	public int internalTick = 1;
 	public CircuitBoardItem circuitBoardItem;
 	
 	public PropagateManager propagate;
@@ -124,17 +124,34 @@ public class MapCircuitBoard extends JavaPlugin {
 			t.printStackTrace();
 		}
 		
-		this.getServer().getScheduler().scheduleSyncRepeatingTask(this, () -> {
+		this.load();
+		
+		this.getServer().getScheduler().scheduleSyncRepeatingTask(this, () -> clock(), 1, 0);
+	}
+	
+	public void load() {
+		this.reloadConfig();
+		FileConfiguration config = getConfig();
+		
+		if(config.contains(INTERNAL_TICK)) 
+			internalTick = config.getInt(INTERNAL_TICK);
+		else config.set(INTERNAL_TICK, internalTick);
+		
+		this.saveConfig();
+	}
+	
+	public static final String INTERNAL_TICK = "internalTick";
+	public int internalTick = 1;
+	public void clock() {
+		canvasService.getPluginCanvases(this, "redstone", CircuitBoardCanvas.class)
+			.forEach(redstone -> {if(redstone.canvas().frame == null) redstone.canvas().whereami();});
+		for(int i = 0; i < internalTick; i ++) {
 			canvasService.getPluginCanvases(this, "redstone", CircuitBoardCanvas.class)
-				.forEach(redstone -> {if(redstone.canvas().frame == null) redstone.canvas().whereami();});
-			for(int i = 0; i < internalTick; i ++) {
-				canvasService.getPluginCanvases(this, "redstone", CircuitBoardCanvas.class)
-					.forEach(redstone -> redstone.canvas().propagateIn());
-				canvasService.getPluginCanvases(this, "redstone", CircuitBoardCanvas.class)
-					.forEach(redstone -> redstone.canvas().clockTick());
-				canvasService.getPluginCanvases(this, "redstone", CircuitBoardCanvas.class)
-					.forEach(redstone -> redstone.canvas().propagateOut());
-			}
-		},1, 0);
+				.forEach(redstone -> redstone.canvas().propagateIn());
+			canvasService.getPluginCanvases(this, "redstone", CircuitBoardCanvas.class)
+				.forEach(redstone -> redstone.canvas().clockTick());
+			canvasService.getPluginCanvases(this, "redstone", CircuitBoardCanvas.class)
+				.forEach(redstone -> redstone.canvas().propagateOut());
+		}
 	}
 }
