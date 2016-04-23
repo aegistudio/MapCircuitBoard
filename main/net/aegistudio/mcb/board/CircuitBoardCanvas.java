@@ -121,24 +121,11 @@ public class CircuitBoardCanvas implements PluginCanvas, PlaceSensitive {
 		if(this.grid != null) this.grid.remove();
 	}
 	
+	public ItemFrame frame;
 	@Override
 	public void tick() {
 		// Check map in-place.
-		ItemFrame target = null;
-		if(location != null) {
-			for(Entity entity : location.getWorld().getNearbyEntities(location, 1.6, 1.6, 1.6))
-				if(entity instanceof ItemFrame) {
-					ItemFrame frame = (ItemFrame) entity;
-					ItemStack internalItem = frame.getItem();
-					if(internalItem != null) 
-						if(internalItem.getType() == Material.MAP)
-							if(internalItem.getDurability() == canvas.mapid()) {
-								target = frame;
-								break;
-							}
-				}
-			if(target == null) defer();
-		}
+		whereami();
 		
 		// Update reference.
 		if(this.location != null && this.referred != null) {
@@ -156,26 +143,55 @@ public class CircuitBoardCanvas implements PluginCanvas, PlaceSensitive {
 			plugin.canvasService.destroy(canvas);
 		}
 		
-		final ItemFrame finalFrame = target;
-		
-		// Actually tick.
-		if(this.grid != null) {
-			for(int i = 0; i < plugin.internalTick; i ++) {
-				// Take in signal.
-				Facing.all(f -> propagateIn(finalFrame, f));
-				
-				// Do tick.
-				grid.tick();
-				
-				// Emit out signal.
-				Facing.all(f -> propagateOut(finalFrame, f));
-			}
-			
-			context.color(null);
-			context.clear();
-			grid.paint(context);
-			context.repaint();
+		// Do repaint.
+		if(this.location != null && this.referred != null)
+			this.repaint();
+	}
+	
+	public void whereami() {
+		ItemFrame target = null;
+		if(location != null) {
+			for(Entity entity : location.getWorld().getNearbyEntities(location, 1.6, 1.6, 1.6))
+				if(entity instanceof ItemFrame) {
+					ItemFrame frame = (ItemFrame) entity;
+					ItemStack internalItem = frame.getItem();
+					if(internalItem != null) 
+						if(internalItem.getType() == Material.MAP)
+							if(internalItem.getDurability() == canvas.mapid()) {
+								target = frame;
+								break;
+							}
+				}
+			if(target == null) defer();
 		}
+		frame = target;
+	}
+	
+	public void propagateIn() {
+		if(frame != null && grid != null)
+			Facing.all(face -> 
+				plugin.propagate.in(transform(face, frame.getFacing(), 
+						frame.getLocation().clone()), face, this, frame));
+	}
+	
+	public void clockTick() {
+		if(grid != null)
+			grid.tick();
+	}
+	
+	public void propagateOut() {
+		if(frame != null && grid != null)
+			Facing.all(face -> 
+				plugin.propagate.out(transform(face, frame.getFacing(), 
+						frame.getLocation().clone()), face, this, frame));
+	}
+	
+	public void repaint() {
+		context.color(null);
+		context.clear();
+		if(grid != null) 
+			grid.paint(context);
+		context.repaint();
 	}
 	
 	public Location transform(Facing facing, BlockFace face, Location location) {
@@ -190,14 +206,6 @@ public class CircuitBoardCanvas implements PluginCanvas, PlaceSensitive {
 			 */
 			return location.add(mz * facing.offsetColumn, 0, -mx * facing.offsetColumn);
 		}
-	}
-	
-	public void propagateOut(ItemFrame frame, Facing face) {
-		plugin.propagate.out(transform(face, frame.getFacing(), frame.getLocation().clone()), face, this, frame);
-	}
-	
-	public void propagateIn(ItemFrame frame, Facing face) {
-		plugin.propagate.in(transform(face, frame.getFacing(), frame.getLocation().clone()), face, this, frame);
 	}
 	
 	@Override

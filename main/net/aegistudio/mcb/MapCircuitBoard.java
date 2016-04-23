@@ -123,5 +123,18 @@ public class MapCircuitBoard extends JavaPlugin {
 		catch(Throwable t) {
 			t.printStackTrace();
 		}
+		
+		this.getServer().getScheduler().scheduleSyncRepeatingTask(this, () -> {
+			canvasService.getPluginCanvases(this, "redstone", CircuitBoardCanvas.class)
+				.forEach(redstone -> {if(redstone.canvas().frame == null) redstone.canvas().whereami();});
+			for(int i = 0; i < internalTick; i ++) {
+				canvasService.getPluginCanvases(this, "redstone", CircuitBoardCanvas.class)
+					.forEach(redstone -> redstone.canvas().propagateIn());
+				canvasService.getPluginCanvases(this, "redstone", CircuitBoardCanvas.class)
+					.forEach(redstone -> redstone.canvas().clockTick());
+				canvasService.getPluginCanvases(this, "redstone", CircuitBoardCanvas.class)
+					.forEach(redstone -> redstone.canvas().propagateOut());
+			}
+		},1, 0);
 	}
 }
