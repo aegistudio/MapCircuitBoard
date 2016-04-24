@@ -140,21 +140,12 @@ public class BlockPropagatePolicy implements PropagatePolicy {
 			
 			case REDSTONE_LAMP_ON:
 			case REDSTONE_LAMP_OFF:
-				if(power > 0) {
-					BlockState fromstate = from.getBlock().getState();
-					Material material = fromstate.getType();
-					byte rawdata = fromstate.getRawData();
-					
-					from.getBlock().setType(Material.REDSTONE_BLOCK, false);
-					
-					block.setType(Material.REDSTONE_LAMP_ON);
-					
-					from.getBlock().setTypeIdAndData(material.getId(),
-							rawdata, false);
-				}
+				if(power > 0) 
+					block.setType(Material.REDSTONE_LAMP_ON, true);
 				else block.setType(Material.REDSTONE_LAMP_OFF, true);
 				
 				block = block.getLocation().getBlock();
+				block.getState().update(true, true);
 				block.setMetadata(REDSTONE_STATE, new FixedMetadataValue(plugin, power));
 			break;
 			
