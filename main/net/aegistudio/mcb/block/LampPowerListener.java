@@ -1,4 +1,4 @@
-package net.aegistudio.mcb.board;
+package net.aegistudio.mcb.block;
 
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;

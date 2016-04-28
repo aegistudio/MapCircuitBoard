@@ -5,7 +5,7 @@ import java.io.DataOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-public abstract class AbstractCell<G extends Grid, C extends Component> implements Cell {
+public abstract class AbstractCell<G extends Grid, C extends Component> implements Cell, Comparable<Cell> {
 	private final int row;		public @Override int getRow() {	return row;	}
 	private final int column;	public @Override int getColumn() {	return column;	}
 	private final G grid;		public @Override G getGrid() { return grid; }
@@ -62,5 +62,12 @@ public abstract class AbstractCell<G extends Grid, C extends Component> implemen
 	
 	public void tick() {
 		// Don't tick by default.
+	}
+	
+	public int compareTo(Cell another) {
+		int difference = row - another.getRow();
+		if(difference == 0) 
+			difference = column - another.getColumn();
+		return difference;
 	}
 }

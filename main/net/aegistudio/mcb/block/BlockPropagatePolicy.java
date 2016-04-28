@@ -1,4 +1,4 @@
-package net.aegistudio.mcb.board;
+package net.aegistudio.mcb.block;
 
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -16,6 +16,9 @@ import org.bukkit.metadata.FixedMetadataValue;
 
 import net.aegistudio.mcb.Facing;
 import net.aegistudio.mcb.MapCircuitBoard;
+import net.aegistudio.mcb.board.CircuitBoardCanvas;
+import net.aegistudio.mcb.board.PropagatePolicy;
+import net.aegistudio.mcb.board.Propagator;
 
 public class BlockPropagatePolicy implements PropagatePolicy {
 	public final MapCircuitBoard plugin;

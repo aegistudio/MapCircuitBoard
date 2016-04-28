@@ -1,4 +1,4 @@
-package net.aegistudio.mcb.board;
+package net.aegistudio.mcb.block;
 
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockRedstoneEvent;

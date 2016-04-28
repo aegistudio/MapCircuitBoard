@@ -8,6 +8,7 @@ import org.bukkit.entity.ItemFrame;
 
 import net.aegistudio.mcb.Facing;
 import net.aegistudio.mcb.MapCircuitBoard;
+import net.aegistudio.mcb.block.BlockPropagatePolicy;
 
 public class PropagateManager implements PropagatePolicy {
 	/** Using strategic pattern **/
