@@ -24,7 +24,9 @@ import net.aegistudio.mcb.ComponentFactory;
 import net.aegistudio.mcb.Data;
 import net.aegistudio.mcb.Facing;
 import net.aegistudio.mcb.board.ActualGrid;
+import net.aegistudio.mcb.board.SpectatedActualGrid;
 import net.aegistudio.mcb.layout.LayoutGrid;
+import net.aegistudio.mcb.layout.SpectatedLayoutGrid;
 import net.aegistudio.mpp.Interaction;
 
 public class ActualGridEmulator extends AwtGridComponent {
@@ -148,8 +150,10 @@ public class ActualGridEmulator extends AwtGridComponent {
 		newEmulation.addActionListener(a -> {
 			if(JFileChooser.APPROVE_OPTION == layoutChooser.showOpenDialog(frame)) try {
 				FileInputStream input = new FileInputStream(layoutChooser.getSelectedFile());
-				LayoutGrid grid = new LayoutGrid();	grid.load(input, table);
-				ActualGrid actualGrid = new ActualGrid(grid);
+				//LayoutGrid grid = new LayoutGrid();	grid.load(input, table);
+				LayoutGrid grid = new SpectatedLayoutGrid();	grid.load(input, table);
+				
+				ActualGrid actualGrid = new SpectatedActualGrid(grid);
 				resetGridComponent(frame, new ActualGridEmulator(actualGrid));
 			}
 			catch(Exception e) {
@@ -180,10 +184,10 @@ public class ActualGridEmulator extends AwtGridComponent {
 			if(JFileChooser.APPROVE_OPTION == chooser.showOpenDialog(frame)) try {
 				FileInputStream input = new FileInputStream(chooser.getSelectedFile());
 				
-				LayoutGrid grid = new LayoutGrid();
+				LayoutGrid grid = new SpectatedLayoutGrid();
 				grid.load(input, table);
 				
-				ActualGrid actualGrid = new ActualGrid(grid);
+				ActualGrid actualGrid = new SpectatedActualGrid(grid);
 				actualGrid.load(input, table);
 				
 				resetGridComponent(frame, new ActualGridEmulator(actualGrid));

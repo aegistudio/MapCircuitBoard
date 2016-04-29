@@ -92,7 +92,7 @@ public abstract class AbstractGrid implements Grid {
 	 */
 	public final HashSet<CellObserver> observers = new HashSet<CellObserver>();
 	
-	public interface CellObserver {
+	public static interface CellObserver {
 		public void update(int row, int column, Cell oldCell, Cell newCell);
 	}
 	

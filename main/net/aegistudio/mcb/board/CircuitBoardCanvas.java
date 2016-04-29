@@ -75,7 +75,8 @@ public class CircuitBoardCanvas implements PluginCanvas, PlaceSensitive {
 				
 				this.referred = this.plugin.schemes.get((int)din.readShort());
 				
-				this.grid = new ActualGrid(referred.canvas().scheme);
+				//this.grid = new ActualGrid(referred.canvas().scheme);
+				this.grid = new SpectatedActualGrid(referred.canvas().scheme);
 				this.grid.load(input, plugin.factory);
 				this.grid.add();
 			}
@@ -130,7 +131,8 @@ public class CircuitBoardCanvas implements PluginCanvas, PlaceSensitive {
 		// Update reference.
 		if(this.location != null && this.referred != null) {
 			if(this.grid == null) {
-				this.grid = new ActualGrid(referred.canvas().scheme);
+				//this.grid = new ActualGrid(referred.canvas().scheme);
+				this.grid = new SpectatedActualGrid(referred.canvas().scheme);
 				this.grid.add();
 			}
 		}
@@ -151,6 +153,7 @@ public class CircuitBoardCanvas implements PluginCanvas, PlaceSensitive {
 	public void whereami() {
 		ItemFrame target = null;
 		if(location != null) {
+			if(!location.getChunk().isLoaded()) return;
 			for(Entity entity : location.getWorld().getNearbyEntities(location, 1.6, 1.6, 1.6))
 				if(entity instanceof ItemFrame) {
 					ItemFrame frame = (ItemFrame) entity;

@@ -21,7 +21,8 @@ public class SchemeCanvas implements PluginCanvas {
 	public SchemeCanvas(MapCircuitBoard plugin, Context context) {
 		this.context = context;
 		this.plugin = plugin;
-		this.scheme = new LayoutGrid();
+		//this.scheme = new LayoutGrid();
+		this.scheme = new SpectatedLayoutGrid();
 	}
 	
 	public @Override void tick() {	}

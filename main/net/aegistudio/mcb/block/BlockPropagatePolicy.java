@@ -1,5 +1,7 @@
 package net.aegistudio.mcb.block;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -11,7 +13,11 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Dispenser;
 import org.bukkit.block.Dropper;
+import org.bukkit.block.PistonMoveReaction;
 import org.bukkit.entity.ItemFrame;
+import org.bukkit.event.block.BlockPistonExtendEvent;
+import org.bukkit.event.block.BlockPistonRetractEvent;
+import org.bukkit.material.PistonBaseMaterial;
 import org.bukkit.metadata.FixedMetadataValue;
 
 import net.aegistudio.mcb.Facing;
@@ -84,15 +90,16 @@ public class BlockPropagatePolicy implements PropagatePolicy {
 				block.setMetadata(REDSTONE_STATE, new FixedMetadataValue(plugin, Math.min(15, power)));
 			break;
 			
-			//case REDSTONE_COMPARATOR_OFF:
-			//case REDSTONE_COMPARATOR_ON:
-			//	if(redstoneOnOff == null)
-			//		redstoneOnOff = p -> p > 0? 
-			//				Material.REDSTONE_COMPARATOR_ON:
-			//				Material.REDSTONE_COMPARATOR_OFF;
-			//	if(shouldPower == null)
-			//		shouldPower = p -> p > 0? 15 : 0;
-				
+			case REDSTONE_COMPARATOR_OFF:
+			case REDSTONE_COMPARATOR_ON:
+				/*
+				BlockState comparatorState = block.getState();
+				Comparator comparator = (Comparator) comparatorState.getData();
+				System.out.println(comparator.getFacing());
+				BlockFace face = block.getFace(from.getBlock());
+				*/
+			break;
+					
 			case DIODE_BLOCK_OFF:
 			case DIODE_BLOCK_ON:
 				if(redstoneOnOff == null)
@@ -110,12 +117,13 @@ public class BlockPropagatePolicy implements PropagatePolicy {
 							Material.REDSTONE_TORCH_ON;
 				if(shouldPower == null)
 						shouldPower = p -> p > 0? 0 : 15;
-					
 				byte meta = block.getData();
 				
 				block.setTypeIdAndData(redstoneOnOff.apply(power).getId(), meta, true);
 				
 				block = block.getLocation().getBlock();
+				block.getState().update(true, true);
+				
 				block.setMetadata(REDSTONE_STATE, new FixedMetadataValue(plugin, shouldPower.apply(power)));
 			break;
 
@@ -154,6 +162,36 @@ public class BlockPropagatePolicy implements PropagatePolicy {
 			
 			case PISTON_BASE:
 			case PISTON_STICKY_BASE:
+				/*
+				BlockState state = block.getState();
+				PistonBaseMaterial base = (PistonBaseMaterial) state.getData();
+				base.setPowered(power > 0? true : false);
+				state.setData(base);
+				state.update(true, true);
+				*/
+				
+				BlockState state = block.getState();
+				PistonBaseMaterial base = (PistonBaseMaterial) state.getData();
+				List<Block> blockList = new ArrayList<Block>();
+				BlockFace face = base.getFacing();
+				Block pointerBlock = block.getRelative(face);
+				boolean nonBlock = true;
+				for(int i = 0; i < 15; i ++) 
+					if(pointerBlock.getPistonMoveReaction() == PistonMoveReaction.BLOCK) {
+						nonBlock = false;
+						break;
+					}
+					else {
+						blockList.add(pointerBlock);
+						if(pointerBlock.getPistonMoveReaction() == PistonMoveReaction.BREAK)
+							break;
+						else pointerBlock = pointerBlock.getRelative(face);
+					}
+				
+				if(nonBlock)
+					plugin.getServer().getPluginManager().callEvent(power > 0?
+							new BlockPistonExtendEvent(block, 15, face):
+							new BlockPistonRetractEvent(block, blockList, face));
 			break;
 			
 			default:
@@ -177,5 +215,4 @@ public class BlockPropagatePolicy implements PropagatePolicy {
 			}
 		}
 	}
-	
 }

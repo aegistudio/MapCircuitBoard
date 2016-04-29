@@ -25,6 +25,7 @@ import net.aegistudio.mcb.Facing;
 import net.aegistudio.mcb.layout.LayoutGrid;
 import net.aegistudio.mcb.layout.LayoutUnitCell;
 import net.aegistudio.mcb.layout.LayoutWireCell;
+import net.aegistudio.mcb.layout.SpectatedLayoutGrid;
 import net.aegistudio.mpp.Interaction;
 
 public class LayoutGridEditor extends AwtGridComponent {
@@ -224,8 +225,9 @@ public class LayoutGridEditor extends AwtGridComponent {
 		});
 		help.add(about);
 		menubar.add(help);
-		
-		resetGridComponent(frame, new LayoutGridEditor(new LayoutGrid()));
+
+		//resetGridComponent(frame, new LayoutGridEditor(new LayoutGrid()));
+		resetGridComponent(frame, new LayoutGridEditor(new SpectatedLayoutGrid()));
 		
 		frame.setVisible(true);
 	}
