@@ -76,9 +76,9 @@ public class MapCircuitBoard extends JavaPlugin {
 			String languageName = Locale.getDefault().toString();
 			if(!supportedLocale.contains(languageName))
 				languageName = "en_US";
-			defaultLocale.load(getClass().getResourceAsStream(languageName + ".ini"));
+			defaultLocale.load(getClass().getResourceAsStream(languageName + ".properties"));
 			
-			File locale = new File(this.getDataFolder(), "locale.ini");
+			File locale = new File(this.getDataFolder(), "locale.properties");
 			if(locale.exists())
 				this.locale.load(new FileInputStream(locale));
 			
