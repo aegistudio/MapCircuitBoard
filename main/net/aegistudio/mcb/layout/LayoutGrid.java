@@ -3,6 +3,8 @@ package net.aegistudio.mcb.layout;
 import java.io.InputStream;
 import java.util.ArrayDeque;
 
+import org.bukkit.entity.ItemFrame;
+
 import net.aegistudio.mcb.Air;
 import net.aegistudio.mcb.Cell;
 import net.aegistudio.mcb.Component;
@@ -161,5 +163,5 @@ public class LayoutGrid extends AbstractGrid {
 	}
 
 	@Override
-	public void tick() {		}
+	public void tick(ItemFrame frame) {		}
 }

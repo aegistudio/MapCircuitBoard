@@ -3,6 +3,8 @@ package net.aegistudio.mcb;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import org.bukkit.entity.ItemFrame;
+
 import net.aegistudio.mpp.algo.Paintable;
 
 public interface Grid {
@@ -16,5 +18,5 @@ public interface Grid {
 	
 	public void paint(Paintable paintable);
 	
-	public void tick();
+	public void tick(ItemFrame frame);
 }

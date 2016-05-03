@@ -10,11 +10,6 @@ public class LayoutUnitCell extends AbstractCell<LayoutGrid, Unit>{
 		super(grid, row, column);
 		super.setComponent(component);
 	}
-
-	@Override
-	public void tick() {
-		
-	}
 	
 	public <T extends Data> void setData(T data) {
 		Data old = super.getData(Data.class);

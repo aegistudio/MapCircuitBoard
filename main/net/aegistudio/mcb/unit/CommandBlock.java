@@ -1,27 +1,29 @@
 package net.aegistudio.mcb.unit;
 
+import java.awt.Color;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import org.bukkit.entity.ItemFrame;
+
 import net.aegistudio.mcb.Cell;
-import net.aegistudio.mcb.MapCircuitBoard;
 import net.aegistudio.mpp.Interaction;
 import net.aegistudio.mpp.algo.Paintable;
 
 public class CommandBlock implements Unit {
-	public final MapCircuitBoard plugin;
-	public CommandBlock(MapCircuitBoard plugin) {
-		this.plugin = plugin;
+	public final CommandBlockEditor editor;
+	public CommandBlock(CommandBlockEditor editor) {
+		this.editor = editor;
 	}
 	
 	@Override
 	public void init(Cell cell) {
-		cell.setData(new CommandBlockData("", false));
+		cell.setData(new CommandBlockData(editor));
 	}
 
 	@Override
 	public void load(Cell cell, InputStream inputStream) throws Exception {
-		cell.setData(CommandBlockData.read(inputStream));
+		cell.setData(CommandBlockData.read(editor, inputStream));
 	}
 
 	@Override
@@ -31,18 +33,26 @@ public class CommandBlock implements Unit {
 
 	@Override
 	public void interact(Cell cell, Interaction interaction) {
-		if(cell.getData(CommandBlockData.class).nonTick) {
-			// Show ui.
-		}
+		editor.edit(interaction, cell.getData(CommandBlockData.class), cell);
 	}
 
 	@Override
 	public void paint(Cell cell, Paintable paintable) {
+		paintable.color(Color.GRAY);
+		for(int i = 0; i < 4; i ++)
+			for(int j = 0; j < 4; j ++)
+				paintable.set(i, j);
 		
+		paintable.color(Color.GREEN.darker());
+		paintable.set(1, 2); paintable.set(2, 1);
+		
+		paintable.color(Color.RED.darker());
+		paintable.set(1, 1); paintable.set(2, 2);
 	}
 
 	@Override
-	public void tick(Cell cell) {
+	public void tick(ItemFrame frame, Cell cell) {
 		cell.getData(CommandBlockData.class).nonTick = false;
+		editor.execute(frame, cell.getData(CommandBlockData.class), cell);
 	}
 }

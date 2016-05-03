@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import net.aegistudio.mcb.unit.Button;
+import net.aegistudio.mcb.unit.CommandBlock;
+import net.aegistudio.mcb.unit.CommandBlockEditor;
 import net.aegistudio.mcb.unit.Comparator;
 import net.aegistudio.mcb.unit.Lever;
 import net.aegistudio.mcb.unit.MonitorPin;
@@ -19,6 +21,10 @@ public class ComponentFactory {
 	private final ArrayList<Component> instance = new ArrayList<Component>();
 	
 	public ComponentFactory() {
+		this(null);
+	}
+	
+	public ComponentFactory(CommandBlockEditor editor) {
 		instance.add(Air.INSTANCE);
 		instance.add(FullDirectionalWire.INSTANCE);
 		Facing.all(face -> instance.add(Torch.INSTANCES[face.ordinal()]));
@@ -36,6 +42,8 @@ public class ComponentFactory {
 		
 		Facing.all(face -> instance.add(Comparator.INSTANCES[face.ordinal()][0]));
 		Facing.all(face -> instance.add(Comparator.INSTANCES[face.ordinal()][1]));
+		
+		instance.add(new CommandBlock(editor));
 	}
 	
 	public int id(Component component) {

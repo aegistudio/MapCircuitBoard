@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import org.bukkit.Material;
+import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.Player;
 
 import net.aegistudio.mcb.Cell;
@@ -93,7 +94,7 @@ public class Repeater implements Unit {
 	}
 	
 	@Override
-	public void tick(Cell cell) {
+	public void tick(ItemFrame frame, Cell cell) {
 		RepeaterQueue data = cell.getData(RepeaterQueue.class);
 		if(!hatched(cell)) {
 			Cell adjCell = cell.adjacence(inputSide);

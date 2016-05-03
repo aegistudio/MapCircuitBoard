@@ -3,6 +3,8 @@ package net.aegistudio.mcb.board;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import org.bukkit.entity.ItemFrame;
+
 import net.aegistudio.mcb.AbstractCell;
 import net.aegistudio.mcb.Cell;
 import net.aegistudio.mcb.Facing;
@@ -35,7 +37,7 @@ public class ActualWireCell extends AbstractCell<ActualGrid, Wire> {
 	
 	public void save(OutputStream outputStream) throws Exception {	}
 	
-	public void tick() {
+	public void tick(ItemFrame frame) {
 		Facing.all((face) -> super.setLevel(face, Short.MAX_VALUE));
 		Facing.all((face) -> {
 			Cell cell = super.adjacence(face);

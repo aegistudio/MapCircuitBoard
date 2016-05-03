@@ -3,6 +3,8 @@ package net.aegistudio.mcb;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import org.bukkit.entity.ItemFrame;
+
 /**
  * Cell is inside a grid, either a prototype / scheme
  * or a actual implementing circuit.
@@ -73,5 +75,5 @@ public interface Cell {
 	/**
 	 * When the cell ticks.
 	 */
-	public void tick();
+	public void tick(ItemFrame location);
 }

@@ -1,10 +1,15 @@
 package net.aegistudio.mcb;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.net.URL;
 import java.util.Deque;
 import java.util.LinkedList;
+import java.util.Locale;
 import java.util.Properties;
 import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.function.Consumer;
 
 import org.bukkit.ChatColor;
@@ -27,6 +32,7 @@ import net.aegistudio.mcb.layout.ComponentPlaceListener;
 import net.aegistudio.mcb.layout.ComponentPlacer;
 import net.aegistudio.mcb.layout.SchemeCanvas;
 import net.aegistudio.mcb.unit.Button;
+import net.aegistudio.mcb.unit.CommandBlock;
 import net.aegistudio.mcb.unit.Comparator;
 import net.aegistudio.mcb.unit.Lever;
 import net.aegistudio.mcb.unit.MonitorPin;
@@ -57,9 +63,45 @@ public class MapCircuitBoard extends JavaPlugin {
 	public CircuitBoardItem circuitBoardItem;
 	
 	public PropagateManager propagate;
+	public BukkitBlockEditor editor;
+	
+	public static final TreeSet<String> supportedLocale = new TreeSet<String>(); {
+		supportedLocale.add("en_US");
+	}
+	Properties locale = new Properties();
 	
 	public void onEnable() {
-		factory = new ComponentFactory();
+		try {
+			Properties defaultLocale = new Properties();
+			String languageName = Locale.getDefault().toString();
+			if(!supportedLocale.contains(languageName))
+				languageName = "en_US";
+			defaultLocale.load(getClass().getResourceAsStream(languageName + ".ini"));
+			
+			File locale = new File(this.getDataFolder(), "locale.ini");
+			if(locale.exists())
+				this.locale.load(new FileInputStream(locale));
+			
+			int presize = this.locale.keySet().size();
+			defaultLocale.forEach((k, v) -> MapCircuitBoard.this.locale.putIfAbsent(k, v));
+			int postsize = this.locale.keySet().size();
+			
+			if(postsize > presize)
+				this.locale.store(new FileOutputStream(locale), null);
+			
+			this.locale.replaceAll((k, v) -> {
+				String current = (String) v;
+				for(ChatColor color : ChatColor.values()) 
+					current = current.replace("${" + color.name() + "}", color.toString());
+				return current;
+			});
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+			this.setEnabled(false);
+		}
+		
+		factory = new ComponentFactory(editor = new BukkitBlockEditor(this));
 		placeListener.add(new ComponentPlacer(Material.AIR, factory.get(factory.id(Air.class))));
 		placeListener.add(new ComponentPlacer(Material.REDSTONE, factory.get(factory.id(FullDirectionalWire.class))));
 		factory.all(Torch.class, torch -> placeListener.add(new ComponentPlacer(Material.REDSTONE_TORCH_ON, torch)));
@@ -70,6 +112,7 @@ public class MapCircuitBoard extends JavaPlugin {
 		factory.all(BiInsulatedWire.class, insulated -> placeListener.add(new ComponentPlacer(Material.POWERED_RAIL, insulated)));
 		factory.all(Repeater.class, repeater -> placeListener.add(new ComponentPlacer(Material.DIODE, repeater)));
 		factory.all(Comparator.class, comparator -> placeListener.add(new ComponentPlacer(Material.REDSTONE_COMPARATOR, comparator)));
+		factory.all(CommandBlock.class, command -> placeListener.add(new ComponentPlacer(Material.COMMAND, command)));
 		
 		propagate = new PropagateManager(this);
 		
@@ -94,13 +137,13 @@ public class MapCircuitBoard extends JavaPlugin {
 					.getRegistration(PluginCommandService.class).getProvider();
 			commandService.registerCreate(this, "create/scheme", "scheme", 
 					new CanvasCommandHandle<MapCircuitBoard, SchemeCanvas>() {
-				public @Override String description() {		return "create a circuit scheme!";		}
+				public @Override String description() {		return locale.getProperty("scheme.description");		}
 				
 				public @Override boolean handle(MapCircuitBoard arg0, CommandSender arg1, 
 						String[] arg2, SchemeCanvas arg3) {
 					if(arg1.hasPermission("mcb.scheme"))
 						return true;
-					arg1.sendMessage(ChatColor.RED + "You don't have permission to create a scheme.");
+					arg1.sendMessage(locale.getProperty("scheme.nopermission"));
 					return false;
 				}
 				
@@ -109,12 +152,12 @@ public class MapCircuitBoard extends JavaPlugin {
 			
 			commandService.registerControl(this, "create/circuit", "scheme", SchemeCanvas.class, 
 					new CanvasCommandHandle<MapCircuitBoard, SchemeCanvas>() {
-				public @Override String description() {		return "obtain a circuit board item!";		}
+				public @Override String description() {		return locale.getProperty("circuit.description");		}
 				
 				public @Override boolean handle(MapCircuitBoard arg0, CommandSender arg1, String[] arg2, SchemeCanvas arg3) {
 					if(!(arg1 instanceof Player)) return false;
 					if(!arg1.hasPermission("mcb.circuit")) {
-						arg1.sendMessage(ChatColor.RED + "You don't have permission to obtain a circuit board.");
+						arg1.sendMessage(locale.getProperty("circuit.nopermission"));
 						return true;
 					}
 					
@@ -128,19 +171,21 @@ public class MapCircuitBoard extends JavaPlugin {
 				public @Override String paramList() {	return "";	}
 			});
 			
-			/**
-			 * Sending metric message to mcstats.
-			 */
-		    try {
-		        Metrics metrics = new Metrics(this);
-		        metrics.start();
-		    } catch (Exception e) {
-		        
-		    }
+			editor.registerCommands(commandService);
 		}
 		catch(Throwable t) {
 			t.printStackTrace();
 		}
+		
+		/**
+		 * Sending metric message to mcstats.
+		 */
+		try {
+	        Metrics metrics = new Metrics(this);
+	        metrics.start();
+	    } catch (Exception e) {
+	        
+	    }
 		
 		this.load();
 	
@@ -250,7 +295,7 @@ public class MapCircuitBoard extends JavaPlugin {
 		}
 		
 		public void run() {
-			try {	this.consumer.accept(canvas);	} catch(Throwable t) {}
+			try {	this.consumer.accept(canvas);	} catch(Throwable t) { }
 		}
 	}
 }

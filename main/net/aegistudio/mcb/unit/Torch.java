@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import org.bukkit.entity.ItemFrame;
+
 import net.aegistudio.mcb.Cell;
 import net.aegistudio.mcb.Facing;
 import net.aegistudio.mpp.Interaction;
@@ -58,7 +60,7 @@ public class Torch implements Unit {
 	}
 	
 	@Override
-	public void tick(Cell cell) {
+	public void tick(ItemFrame frame, Cell cell) {
 		Cell adjCell = cell.adjacence(inputSide);
 		int level = 0;
 		if(adjCell != null) 

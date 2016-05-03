@@ -1,5 +1,7 @@
 package net.aegistudio.mcb.unit;
 
+import org.bukkit.entity.ItemFrame;
+
 import net.aegistudio.mcb.Cell;
 import net.aegistudio.mcb.Component;
 
@@ -10,5 +12,5 @@ public interface Unit extends Component {
 	 * 
 	 * @param cell
 	 */
-	public void tick(Cell cell);
+	public void tick(ItemFrame frame, Cell cell);
 }

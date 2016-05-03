@@ -2,6 +2,8 @@ package net.aegistudio.mcb.board;
 
 import java.io.InputStream;
 
+import org.bukkit.entity.ItemFrame;
+
 import net.aegistudio.mcb.AbstractGrid;
 import net.aegistudio.mcb.Cell;
 import net.aegistudio.mcb.Component;
@@ -41,9 +43,9 @@ public class ActualGrid extends AbstractGrid {
 		// Read only / immutable cell!
 	}
 	
-	public void tick() {
+	public void tick(ItemFrame frame) {
 		this.all((r, c, cell, wire) -> {
-			cell.tick();
+			cell.tick(frame);
 		}, Wire.class);
 		
 		this.all((r, c, cell, unit) -> {
@@ -51,14 +53,14 @@ public class ActualGrid extends AbstractGrid {
 		}, Unit.class);
 		
 		this.all((r, c, cell, unit) -> {
-			cell.tick();
+			cell.tick(frame);
 		}, Unit.class);
 	}
 
 	public void load(InputStream inputStream, ComponentFactory table) throws Exception {
 		super.load(inputStream, table);
 		this.all((r, c, cell, wire) -> {
-			cell.tick();
+			cell.tick(null);
 		}, Wire.class);
 	}
 	

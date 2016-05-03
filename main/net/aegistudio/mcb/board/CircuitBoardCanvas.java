@@ -178,8 +178,8 @@ public class CircuitBoardCanvas implements PluginCanvas, PlaceSensitive {
 	}
 	
 	public void clockTick() {
-		if(grid != null)
-			grid.tick();
+		if(grid != null && frame != null)
+			grid.tick(frame);
 	}
 	
 	public void propagateOut() {

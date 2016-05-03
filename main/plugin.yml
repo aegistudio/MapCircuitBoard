@@ -10,3 +10,6 @@ permissions:
   mcb.circuit:
     description: Grants player to obtain or deploy a circuit board
     default: op
+  mcb.cmdblock:
+    description: Grants player to edit or use command block.
+    default: op

@@ -17,60 +17,68 @@ import org.bukkit.plugin.Plugin;
 import net.aegistudio.mcb.Data;
 
 public class CommandBlockData implements Data, CommandSender {
+	public final CommandBlockEditor editor;
 	public boolean nonTick = true;
 	public String command = "";
-	public boolean lastOutput = false;
-	public CommandBlockData() {
-		this("", false);
-	}
+	public String translated = ""; 	// Volatile
 	
-	public CommandBlockData(String command, boolean lastOutput) {
-		this.command = command;
-		this.lastOutput = lastOutput;
+	public String lastOutput = "";
+	public boolean lastOutputState = false;
+	
+	public String lastEdited = "";
+	public boolean lastInputState = false;
+	
+	public CommandBlockData(CommandBlockEditor editor) {
+		this.editor = editor;
 	}
 	
 	@Override
 	public Data duplicate() {
-		return new CommandBlockData(this.command, this.lastOutput);
+		CommandBlockData data = new CommandBlockData(this.editor);
+		data.command = this.command;
+		data.lastOutput = this.lastOutput;
+		data.lastOutputState = this.lastOutputState;
+		data.lastEdited = this.lastEdited;
+		data.lastInputState = this.lastInputState;
+		return data;
 	}
 	
 	public void write(OutputStream output) throws IOException {
 		DataOutputStream dout = new DataOutputStream(output);
+		dout.writeByte(5);
 		dout.writeUTF(command);
-		dout.writeBoolean(lastOutput);
+		dout.writeUTF(lastOutput);
+		dout.writeBoolean(lastOutputState);
+		dout.writeUTF(lastEdited);
+		dout.writeBoolean(lastInputState);
 	}
 	
-	public static CommandBlockData read(InputStream input) throws IOException {
+	public static CommandBlockData read(CommandBlockEditor editor, InputStream input) throws IOException {
 		DataInputStream din = new DataInputStream(input);
-		String command = din.readUTF();
-		boolean lastOutput = din.readBoolean();
-		return new CommandBlockData(command, lastOutput);
+		CommandBlockData result = new CommandBlockData(editor);
+		byte section = din.readByte();
+		if(section > 0) result.command = din.readUTF();
+		if(section > 1) result.lastOutput = din.readUTF();
+		if(section > 2) result.lastOutputState = din.readBoolean();
+		if(section > 3) result.lastEdited = din.readUTF();
+		if(section > 4) result.lastInputState = din.readBoolean();
+		return result;
 	}
 
 	@Override
-	public PermissionAttachment addAttachment(Plugin arg0) {
-		return null;
-	}
+	public PermissionAttachment addAttachment(Plugin arg0) {	return null;	}
 
 	@Override
-	public PermissionAttachment addAttachment(Plugin arg0, int arg1) {
-		return null;
-	}
+	public PermissionAttachment addAttachment(Plugin arg0, int arg1) {		return null;	}
 
 	@Override
-	public PermissionAttachment addAttachment(Plugin arg0, String arg1, boolean arg2) {
-		return null;
-	}
+	public PermissionAttachment addAttachment(Plugin arg0, String arg1, boolean arg2) {		return null;	}
 
 	@Override
-	public PermissionAttachment addAttachment(Plugin arg0, String arg1, boolean arg2, int arg3) {
-		return null;
-	}
+	public PermissionAttachment addAttachment(Plugin arg0, String arg1, boolean arg2, int arg3) {		return null;	}
 
 	@Override
-	public Set<PermissionAttachmentInfo> getEffectivePermissions() {
-		return null;
-	}
+	public Set<PermissionAttachmentInfo> getEffectivePermissions() {		return null;	}
 
 	@Override
 	public boolean hasPermission(String arg0) {		return true;	}
@@ -102,17 +110,22 @@ public class CommandBlockData implements Data, CommandSender {
 
 	@Override
 	public String getName() {
-		return null;
+		return "@";
 	}
 
 	@Override
 	public Server getServer() {
-		return null;
+		return editor.getServer();
 	}
 
 	@Override
-	public void sendMessage(String arg0) {			}
+	public void sendMessage(String arg0) {
+		this.lastOutput = arg0;
+	}
 
 	@Override
-	public void sendMessage(String[] arg0) {			}
+	public void sendMessage(String[] arg0) {
+		if(arg0.length == 0) return;
+		this.lastOutput = arg0[arg0.length - 1];
+	}
 }

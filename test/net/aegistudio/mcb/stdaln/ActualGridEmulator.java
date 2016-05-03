@@ -94,7 +94,7 @@ public class ActualGridEmulator extends AwtGridComponent {
 	}
 	
 	public void tick() {
-		grid.tick();
+		grid.tick(null);
 		grid.paint(paintable);
 		repaint();
 	}

@@ -5,6 +5,8 @@ import java.io.DataOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import org.bukkit.entity.ItemFrame;
+
 public abstract class AbstractCell<G extends Grid, C extends Component> implements Cell, Comparable<Cell> {
 	private final int row;		public @Override int getRow() {	return row;	}
 	private final int column;	public @Override int getColumn() {	return column;	}
@@ -60,7 +62,7 @@ public abstract class AbstractCell<G extends Grid, C extends Component> implemen
 		component.save(this, output);
 	}
 	
-	public void tick() {
+	public void tick(ItemFrame frame) {
 		// Don't tick by default.
 	}
 	

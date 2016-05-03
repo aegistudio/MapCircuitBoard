@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import org.bukkit.entity.ItemFrame;
+
 import net.aegistudio.mcb.Cell;
 import net.aegistudio.mcb.Facing;
 import net.aegistudio.mpp.Interaction;
@@ -14,7 +16,7 @@ public class OriginatorPin implements Pin {
 	private OriginatorPin() {}
 	
 	@Override
-	public void tick(Cell cell) {
+	public void tick(ItemFrame frame, Cell cell) {
 		Voltage voltage = cell.getData(Voltage.class);
 		Facing.all(f -> cell.setLevel(f, voltage.voltage));
 	}

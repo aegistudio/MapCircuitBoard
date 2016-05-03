@@ -5,6 +5,8 @@ import java.io.DataOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import org.bukkit.entity.ItemFrame;
+
 import net.aegistudio.mcb.AbstractCell;
 import net.aegistudio.mcb.Cell;
 import net.aegistudio.mcb.ComponentFactory;
@@ -47,7 +49,7 @@ public class ActualUnitCell extends AbstractCell<ActualGrid, Unit> {
 		System.arraycopy(level, 0, bufferedLevel, 0, Facing.values().length);
 	}
 	
-	public void tick() {
-		super.component.tick(this);
+	public void tick(ItemFrame frame) {
+		super.component.tick(frame, this);
 	}
 }

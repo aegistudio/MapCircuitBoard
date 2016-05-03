@@ -1,5 +1,7 @@
 package net.aegistudio.mcb.board;
 
+import org.bukkit.entity.ItemFrame;
+
 import net.aegistudio.mcb.Facing;
 import net.aegistudio.mcb.layout.LayoutGrid;
 import net.aegistudio.mcb.unit.Unit;
@@ -14,16 +16,16 @@ public class SpectatedActualGrid extends ActualGrid {
 	@Override
 	public void paint(Paintable paintable) {
 		all((r, c, cell, component) -> {
-			cell.tick();
+			cell.tick(null);
 			Facing.all(f -> cell.getLevel(f));
 		}, Wire.class);
 		super.paint(paintable);
 	}
 	
-	public void tick() {
+	public void tick(ItemFrame frame) {
 		try {
 			this.layout.all((r, c, cell, wire) -> {
-				SpectatedActualGrid.this.cells[r][c].tick();
+				SpectatedActualGrid.this.cells[r][c].tick(frame);
 			}, Wire.class);
 	
 			this.layout.all((r, c, cell, unit) -> {
@@ -31,7 +33,7 @@ public class SpectatedActualGrid extends ActualGrid {
 			}, Unit.class);
 			
 			this.layout.all((r, c, cell, unit) -> {
-				SpectatedActualGrid.this.cells[r][c].tick();
+				SpectatedActualGrid.this.cells[r][c].tick(frame);
 			}, Unit.class);
 		}
 		catch(Throwable e) {

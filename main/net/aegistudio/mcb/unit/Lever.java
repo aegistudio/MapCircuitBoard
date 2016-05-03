@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import org.bukkit.entity.ItemFrame;
+
 import net.aegistudio.mcb.Binary;
 import net.aegistudio.mcb.Cell;
 import net.aegistudio.mcb.Facing;
@@ -58,7 +60,7 @@ public class Lever implements Unit {
 	}
 	
 	@Override
-	public void tick(Cell cell) {
+	public void tick(ItemFrame frame, Cell cell) {
 		boolean powered = cell.getData(Binary.class).booleanValue;
 		Facing.all(face -> cell.setLevel(face, powered? 32 : 0));
 	}

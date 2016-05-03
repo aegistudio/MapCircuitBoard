@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import org.bukkit.Material;
+import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.Player;
 
 import net.aegistudio.mcb.Cell;
@@ -88,7 +89,7 @@ public class Comparator implements Unit {
 	}
 	
 	@Override
-	public void tick(Cell cell) {
+	public void tick(ItemFrame frame, Cell cell) {
 		int aLevel = getInputLevel(cell, inputSide);
 		int bLevel = Math.max(getInputLevel(cell, inputSide.previousQuad()), 
 				getInputLevel(cell, inputSide.nextQuad()));
