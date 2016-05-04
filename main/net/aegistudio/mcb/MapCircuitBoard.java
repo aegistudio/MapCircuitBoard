@@ -67,6 +67,7 @@ public class MapCircuitBoard extends JavaPlugin {
 	
 	public static final TreeSet<String> supportedLocale = new TreeSet<String>(); {
 		supportedLocale.add("en_US");
+		supportedLocale.add("zh_CN");
 	}
 	Properties locale = new Properties();
 	
