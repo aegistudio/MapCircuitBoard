@@ -86,8 +86,9 @@ public class MapCircuitBoard extends JavaPlugin {
 				    	localeMap.load(localeMapUrl.openConnection().getInputStream());
 				    	String mappedLanguage = localeMap.getProperty(Locale.getDefault().toString());
 				    	if(mappedLanguage == null) mappedLanguage = localeMap.getProperty("en_US");
-						defaultLocale.load(getClass().getResourceAsStream(SOURCE_RAW_URL + 
-								"locale/" + mappedLanguage));
+				    	
+				    	URL mappedUrl = new URL(SOURCE_RAW_URL + "locale/" + mappedLanguage);
+						defaultLocale.load(mappedUrl.openConnection().getInputStream());
 					}
 					catch(Exception e) {
 						e.printStackTrace();
@@ -114,8 +115,11 @@ public class MapCircuitBoard extends JavaPlugin {
 						current = current.replace("${" + color.name() + "}", color.toString());
 					return current;
 				});
+				
+				sendConsole("Successfully fetched locale file!");
 			}
 			catch(Exception e) {
+				sendConsole("Failed in fetching locale file.");
 				e.printStackTrace();
 			}
 		}).start();
