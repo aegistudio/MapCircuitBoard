@@ -2,11 +2,9 @@ package net.aegistudio.mcb;
 
 import java.util.TreeMap;
 
-import org.bukkit.ChatColor;
 import org.bukkit.Server;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.ItemFrame;
-import org.bukkit.entity.Player;
 
 import net.aegistudio.mcb.unit.CommandBlockData;
 import net.aegistudio.mcb.unit.CommandBlockEditor;
@@ -16,11 +14,11 @@ import net.aegistudio.mpp.export.PluginCommandService;
 
 public class BukkitBlockEditor implements CommandBlockEditor {
 	private final MapCircuitBoard plugin;
-	public final TreeMap<String, Cell> commandBlock;
+	public CommandHandle<MapCircuitBoard> infoHandle;
 	
 	public BukkitBlockEditor(MapCircuitBoard plugin) {
 		this.plugin = plugin;
-		this.commandBlock = new TreeMap<String, Cell>();
+		this.selected = new TreeMap<String, Pair>();
 	}
 	
 	@Override
@@ -30,13 +28,18 @@ public class BukkitBlockEditor implements CommandBlockEditor {
 
 	@Override
 	public void edit(Interaction interaction, CommandBlockData data, Cell cell) {
-		if(!(interaction.sender instanceof Player)) return;
-		Player player = (Player) interaction.sender;
-		player.sendMessage(ChatColor.AQUA + "Raw command: " + ChatColor.RESET + data.command);
-		player.sendMessage("Actual command: " + data.translated);
-		player.sendMessage("Last output: " + data.lastOutput);
-		player.sendMessage("Emit power: " + (data.lastOutputState? 
-				(ChatColor.GREEN + "yes") : (ChatColor.RED + "no")));
+		Pair value = new Pair();
+		value.data = data; value.cell = cell;
+		selected.put(interaction.sender.getName(), value);
+		
+		interaction.sender.sendMessage("");
+		infoHandle.handle(plugin, "", interaction.sender, new String[0]);
+	}
+	
+	TreeMap<String, Pair> selected;
+	class Pair {
+		CommandBlockData data;
+		Cell cell;
 	}
 
 	@Override
@@ -52,7 +55,7 @@ public class BukkitBlockEditor implements CommandBlockEditor {
 	public void registerCommands(PluginCommandService commandService) throws Exception {
 		// advance plugin command.
 		commandService.registerGroup(plugin, "control/cmdblock", this.plugin.locale.getProperty("cmdblock.description"));
-		commandService.register(plugin, "control/cmdblock/info", new CommandHandle<MapCircuitBoard>() {
+		commandService.register(plugin, "control/cmdblock/info", infoHandle = new CommandHandle<MapCircuitBoard>() {
 			@Override
 			public String description() {
 				return plugin.locale.getProperty("info.description");
@@ -60,6 +63,22 @@ public class BukkitBlockEditor implements CommandBlockEditor {
 
 			@Override
 			public boolean handle(MapCircuitBoard arg0, String arg1, CommandSender arg2, String[] arg3) {
+				Pair pair = selected.get(arg2.getName());
+				if(pair == null){
+					arg2.sendMessage(plugin.locale.getProperty("info.notselected"));
+					return true;
+				}
+				
+				CommandBlockData data = pair.data;
+				arg2.sendMessage(plugin.locale.getProperty("info.lastedited" + data.lastEdited));
+				arg2.sendMessage(plugin.locale.getProperty("info.rawcmd") + data.command);
+				if(data.translated != null && data.translated.length() > 0) 
+					arg2.sendMessage(plugin.locale.getProperty("info.actualcmd") + data.translated);
+				
+				arg2.sendMessage(plugin.locale.getProperty("info.lastoutput") + data.lastOutput);
+				arg2.sendMessage(plugin.locale.getProperty("info.laststate") + (data.lastOutputState? 
+						plugin.locale.getProperty("info.yes") : plugin.locale.getProperty("info.no")));
+				
 				return true;
 			}
 		});
