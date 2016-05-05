@@ -10,16 +10,55 @@
 	
 	<!-- Modify when API changes -->
 	<property file="${basedir}${fs}build.properties"/>
+	<property name="mappainting.path" value="${dir.dep}${fs}mappainting.jar"/>
+	<property name="bukkit.path" value="${dir.dep}${fs}bukkit.jar"/>
+	<property name="retrolambda.path" value="${dir.dep}${fs}retrolambda.jar"/>
+	<property name="googlecollect.path" value="${dir.dep}${fs}googlecollect.jar"/>
+	<property name="ebeanorm.path" value="${dir.dep}${fs}ebeanorm.jar"/>
 	
 	<!-- Do not modify the following code -->
 	<property name="artifact" value="mapcircuitboard"/>
 	
 	<target name="builddep">
 		<mkdir dir="${dir.dep}"/>
-		<get src="${mappainting}" dest="${dir.dep}${fs}mappainting.jar" verbose="true"/>
-		<get src="${bukkit}" dest="${dir.dep}${fs}bukkit.jar" verbose="true"/>
-		<get src="${retrolambda}" dest="${dir.dep}${fs}retrolambda.jar" verbose="true"/>
-		<get src="${googlecollect}" dest="${dir.dep}${fs}googlecollect.jar" verbose="true"/>
-		<get src="${ebeanorm}" dest="${dir.dep}${fs}ebeanorm.jar" verbose="true"/>
+		<!-- fetch map painting api -->
+		<available file="${mappainting.path}" property="mappainting.exists"/>
+		<antcall target="fetch.mpp"/>
+
+		<!-- fetch bukkit api -->
+		<available file="${bukkit.path}" property="bukkit.exists"/>
+		<antcall target="fetch.bukkit"/>
+		
+		<!-- fetch retrolambda -->
+		<available file="${retrolambda.path}" property="retrolambda.exists"/>
+		<antcall target="fetch.retrolambda"/>
+
+		<!-- fetch google collect api -->
+		<available file="${googlecollect.path}" property="googlecollect.exists"/>
+		<antcall target="fetch.googlecollect"/>
+		
+		<!-- fetch ebean orm api -->
+		<available file="${ebeanorm.path}" property="ebeanorm.exists"/>
+		<antcall target="fetch.ebeanorm"/>
+	</target>
+	
+	<target name="fetch.mpp" unless="mappainting.exists">
+		<get src="${mappainting}" dest="${mappainting.path}" verbose="true"/>
+	</target>
+	
+	<target name="fetch.bukkit" unless="bukkit.exists">
+		<get src="${bukkit}" dest="${bukkit.path}" verbose="true"/>
+	</target>
+	
+	<target name="fetch.retrolambda" unless="retrolambda.exists">
+		<get src="${retrolambda}" dest="${retrolambda.path}" verbose="true"/>
+	</target>
+	
+	<target name="fetch.googlecollect" unless="googlecollect.exists">
+		<get src="${googlecollect}" dest="${googlecollect.path}" verbose="true"/>
+	</target>
+	
+	<target name="fetch.ebeanorm" unless="ebeanorm.exists">
+		<get src="${ebeanorm}" dest="${ebeanorm.path}" verbose="true"/>
 	</target>
 </project>
