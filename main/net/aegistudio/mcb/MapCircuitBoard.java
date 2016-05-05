@@ -9,7 +9,6 @@ import java.util.LinkedList;
 import java.util.Locale;
 import java.util.Properties;
 import java.util.TreeMap;
-import java.util.TreeSet;
 import java.util.function.Consumer;
 
 import org.bukkit.ChatColor;
@@ -66,11 +65,6 @@ public class MapCircuitBoard extends JavaPlugin {
 	public BukkitBlockEditor editor;
 	
 	public static final String SOURCE_RAW_URL = "https://raw.githubusercontent.com/aegistudio/MapCircuitBoard/master/";
-	
-	public static final TreeSet<String> supportedLocale = new TreeSet<String>(); {
-		supportedLocale.add("en_US");
-		supportedLocale.add("zh_CN");
-	}
 	Properties locale = new Properties();
 	
 	public void onEnable() {
