@@ -7,6 +7,7 @@ import java.io.OutputStream;
 import org.bukkit.entity.ItemFrame;
 
 import net.aegistudio.mcb.Cell;
+import net.aegistudio.mcb.Facing;
 import net.aegistudio.mpp.Interaction;
 import net.aegistudio.mpp.algo.Paintable;
 
@@ -53,6 +54,19 @@ public class CommandBlock implements Unit {
 	@Override
 	public void tick(ItemFrame frame, Cell cell) {
 		cell.getData(CommandBlockData.class).nonTick = false;
-		editor.execute(frame, cell.getData(CommandBlockData.class), cell);
+		
+		boolean isPowered = false;
+		for(Facing port : Facing.values()) {
+			Cell adjacent = cell.adjacence(port.opposite());
+			if(adjacent == null) continue;
+			if(adjacent.getLevel(port) > 0) {
+				isPowered = true;
+				break;
+			}
+		}
+		
+		if(!cell.getData(CommandBlockData.class).lastInputState && isPowered)
+			editor.execute(frame, cell.getData(CommandBlockData.class), cell);
+		cell.getData(CommandBlockData.class).lastInputState = isPowered;
 	}
 }
