@@ -67,18 +67,42 @@ public class BukkitBlockEditor implements CommandBlockEditor {
 		Cell cell;
 	}
 
+	class Proxier {
+		TileEntityCommand command;
+		CommandBlockData data;
+		CommandSender sender;
+	}
+	
+	TreeMap<Integer, Proxier> proxier = new TreeMap<Integer, Proxier>();
+	public CommandSender retrieve(ItemFrame frame, CommandBlockData data) {
+		Proxier result = proxier.get(frame.getEntityId());
+		if(result != null && result.data == data) return result.sender;
+		Proxier value = new Proxier();
+		
+		value.command = new TileEntityCommand(server);
+		value.command.setWorld(new World(server, frame.getWorld()));
+		value.command.setPosition(new BlockPosition(server, frame.getLocation()));
+		
+		CommandSender sender = (CommandSender)proxiedNativeCommandSender
+				.invoke(null, value.command.getCommandBlock().thiz, data, data);
+
+		value.data = data;	value.sender = sender;
+		proxier.put(frame.getEntityId(), value);
+		return sender;
+	}
+	
 	@Override
 	public void execute(ItemFrame frame, CommandBlockData data, Cell cell) {
 		if(data.command.length() == 0) return;
-		TileEntityCommand command = new TileEntityCommand(server);
-		command.setWorld(new World(server, frame.getWorld()));
-		command.setPosition(new BlockPosition(server, frame.getLocation()));
 		
 		// translate
 		data.translated = data.command;
-		CommandSender sender = (CommandSender)proxiedNativeCommandSender
-				.invoke(null, command.getCommandBlock().thiz, data, data);
-		data.lastOutputState = plugin.getServer().dispatchCommand(sender, data.command);
+		if(data.translated.charAt(0) == '/') 
+			data.translated = data.translated.substring(1);
+		
+		plugin.getServer().getScheduler().runTask(plugin, 
+				() -> data.lastOutputState = plugin.getServer()
+					.dispatchCommand(retrieve(frame, data), data.translated));
 	}
 	
 	public void registerCommands(PluginCommandService commandService) throws Exception {
@@ -147,6 +171,10 @@ public class BukkitBlockEditor implements CommandBlockEditor {
 				
 				pair.data.command = new String(builder);
 				pair.cell.setData(pair.data);
+				pair.data.lastEdited = arg2.getName();
+				if(pair.cell.getGrid() instanceof AbstractGrid)
+					((AbstractGrid)pair.cell.getGrid()).update(pair.cell.getRow(), 
+							pair.cell.getColumn(), pair.cell);
 				
 				return true;
 			}
@@ -160,9 +188,11 @@ public class BukkitBlockEditor implements CommandBlockEditor {
 
 			@Override
 			public boolean handle(MapCircuitBoard arg0, String arg1, CommandSender arg2, String[] arg3) {
+				if(selected.remove(arg2.getName()) != null)
+					arg2.sendMessage(plugin.locale.getProperty("exit.selected"));
+				else arg2.sendMessage(plugin.locale.getProperty("info.notselected"));
 				return true;
 			}
-			
 		});
 	}
 }
