@@ -33,8 +33,8 @@ public class ComponentPlaceListener {
 		if(previous == null) return;
 		Component previousComponent = previous.getComponent();
 		
-		reverseMap.get(previousComponent).unplace(grid, player, row, column);
-		grid.setCell(row, column, null);
+		if(reverseMap.get(previousComponent).unplace(grid, player, row, column))
+			grid.setCell(row, column, null);
 	}
 	
 	public void place(Grid grid, int row, int column, Player player) {
@@ -48,8 +48,8 @@ public class ComponentPlaceListener {
 			if(suspicious != null)
 				for(ComponentPlacer placer : suspicious)
 					if(placer.matches(item)) {
-						placer.place(grid, player, row, column);
-						grid.setCell(row, column, placer.component);
+						if(placer.place(grid, player, row, column))
+							grid.setCell(row, column, placer.component);
 						return ;
 					}
 		}

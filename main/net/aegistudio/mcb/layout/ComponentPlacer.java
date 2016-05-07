@@ -22,12 +22,14 @@ public class ComponentPlacer {
 		return item.getType() == type;
 	}
 	
-	public void place(Grid grid, Player who, int row, int column) {
+	public boolean place(Grid grid, Player who, int row, int column) {
 		consume(who);
+		return true;
 	}
 	
-	public void unplace(Grid grid, Player who, int row, int column) {
+	public boolean unplace(Grid grid, Player who, int row, int column) {
 		repay(who);
+		return true;
 	}
 	
 	@SuppressWarnings("deprecation")

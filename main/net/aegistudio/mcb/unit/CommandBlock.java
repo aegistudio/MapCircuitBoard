@@ -68,5 +68,15 @@ public class CommandBlock implements Unit {
 		if(!cell.getData(CommandBlockData.class).lastInputState && isPowered)
 			editor.execute(frame, cell.getData(CommandBlockData.class), cell);
 		cell.getData(CommandBlockData.class).lastInputState = isPowered;
+		
+		Facing.all(port -> {
+			Cell adjacent = cell.adjacence(port);
+			if(adjacent == null || !(adjacent.getComponent() instanceof Comparator)) {
+				cell.setLevel(port, 0);
+				return;
+			}
+			cell.setLevel(port, cell.getData(CommandBlockData.class)
+					.lastOutputState? 32 : 0);
+		});
 	}
 }

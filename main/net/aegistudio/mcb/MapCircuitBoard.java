@@ -27,6 +27,7 @@ import net.aegistudio.mcb.board.PropagateManager;
 import net.aegistudio.mcb.clock.Asynchronous;
 import net.aegistudio.mcb.clock.Clocking;
 import net.aegistudio.mcb.clock.Synchronous;
+import net.aegistudio.mcb.layout.CommandBlockPlacer;
 import net.aegistudio.mcb.layout.ComponentPlaceListener;
 import net.aegistudio.mcb.layout.ComponentPlacer;
 import net.aegistudio.mcb.layout.SchemeCanvas;
@@ -65,7 +66,7 @@ public class MapCircuitBoard extends JavaPlugin {
 	public BukkitBlockEditor editor;
 	
 	public static final String SOURCE_RAW_URL = "https://raw.githubusercontent.com/aegistudio/MapCircuitBoard/master/";
-	Properties locale = new Properties();
+	public Properties locale = new Properties();
 	
 	public void onEnable() {
 		new Thread(() -> {
@@ -129,7 +130,7 @@ public class MapCircuitBoard extends JavaPlugin {
 		factory.all(BiInsulatedWire.class, insulated -> placeListener.add(new ComponentPlacer(Material.POWERED_RAIL, insulated)));
 		factory.all(Repeater.class, repeater -> placeListener.add(new ComponentPlacer(Material.DIODE, repeater)));
 		factory.all(Comparator.class, comparator -> placeListener.add(new ComponentPlacer(Material.REDSTONE_COMPARATOR, comparator)));
-		factory.all(CommandBlock.class, command -> placeListener.add(new ComponentPlacer(Material.COMMAND, command)));
+		factory.all(CommandBlock.class, command -> placeListener.add(new CommandBlockPlacer(this, Material.COMMAND, command)));
 		
 		propagate = new PropagateManager(this);
 		

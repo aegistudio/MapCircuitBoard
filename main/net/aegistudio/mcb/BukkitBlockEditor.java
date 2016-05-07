@@ -1,5 +1,6 @@
 package net.aegistudio.mcb;
 
+import java.util.HashMap;
 import java.util.TreeMap;
 
 import org.bukkit.Server;
@@ -73,9 +74,9 @@ public class BukkitBlockEditor implements CommandBlockEditor {
 		CommandSender sender;
 	}
 	
-	TreeMap<Integer, Proxier> proxier = new TreeMap<Integer, Proxier>();
+	HashMap<CommandBlockData, Proxier> proxier = new HashMap<CommandBlockData, Proxier>();
 	public CommandSender retrieve(ItemFrame frame, CommandBlockData data) {
-		Proxier result = proxier.get(frame.getEntityId());
+		Proxier result = proxier.get(data);
 		if(result != null && result.data == data) return result.sender;
 		Proxier value = new Proxier();
 		
@@ -87,22 +88,31 @@ public class BukkitBlockEditor implements CommandBlockEditor {
 				.invoke(null, value.command.getCommandBlock().thiz, data, data);
 
 		value.data = data;	value.sender = sender;
-		proxier.put(frame.getEntityId(), value);
+		proxier.put(data, value);
 		return sender;
 	}
 	
 	@Override
 	public void execute(ItemFrame frame, CommandBlockData data, Cell cell) {
-		if(data.command.length() == 0) return;
+		if(data.command.length() == 0) {
+			data.lastOutputState = false;
+			data.translated = "";
+			return;
+		}
 		
 		// translate
 		data.translated = data.command;
 		if(data.translated.charAt(0) == '/') 
 			data.translated = data.translated.substring(1);
 		
-		plugin.getServer().getScheduler().runTask(plugin, 
-				() -> data.lastOutputState = plugin.getServer()
-					.dispatchCommand(retrieve(frame, data), data.translated));
+		// run task.
+		Runnable task = () -> data.lastOutputState = plugin.getServer()
+				.dispatchCommand(retrieve(frame, data), data.translated);
+		
+		// filter asynchronous command.
+		if(data.translated.startsWith("summon"))
+			plugin.getServer().getScheduler().runTask(plugin, task);
+		else task.run();
 	}
 	
 	public void registerCommands(PluginCommandService commandService) throws Exception {
@@ -172,6 +182,8 @@ public class BukkitBlockEditor implements CommandBlockEditor {
 				pair.data.command = new String(builder);
 				pair.cell.setData(pair.data);
 				pair.data.lastEdited = arg2.getName();
+				pair.data.lastOutputState = false;
+				pair.data.translated = "";
 				if(pair.cell.getGrid() instanceof AbstractGrid)
 					((AbstractGrid)pair.cell.getGrid()).update(pair.cell.getRow(), 
 							pair.cell.getColumn(), pair.cell);

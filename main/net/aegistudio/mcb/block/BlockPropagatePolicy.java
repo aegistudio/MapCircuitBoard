@@ -143,19 +143,17 @@ public class BlockPropagatePolicy implements PropagatePolicy {
 			case DISPENSER:
 				if(redstoneInventory == null)
 					redstoneInventory = state -> ((Dispenser)state).dispense();
-			
 				try {
-				
-				final Consumer<BlockState> capturedRedstoneInventory = redstoneInventory;
-				final BlockState capturedBlockState = block.getState();
-				if(block.getData() < 8 && power > 0)
-					plugin.getServer().getScheduler().runTask(plugin, 
-							() -> capturedRedstoneInventory.accept(capturedBlockState));
+					final Consumer<BlockState> capturedRedstoneInventory = redstoneInventory;
+					final BlockState capturedBlockState = block.getState();
+					if(block.getData() < 8 && power > 0)
+						plugin.getServer().getScheduler().runTask(plugin, 
+								() -> capturedRedstoneInventory.accept(capturedBlockState));
 				}
 				catch(Throwable e) {
 					e.printStackTrace();
 				}
-				//block.setData((byte)((power > 0? 8 : 0) | (0x07 & block.getData())));
+				block.setData((byte)((power > 0? 8 : 0) | (0x07 & block.getData())));
 			break;
 			
 			case REDSTONE_LAMP_ON:
