@@ -169,7 +169,7 @@ public class BukkitBlockEditor implements CommandBlockEditor {
 					return true;
 				}
 				if(!arg2.hasPermission("mcb.cmdblock")) {
-					arg2.sendMessage(plugin.locale.getProperty("info.nopermission"));
+					arg2.sendMessage(plugin.locale.getProperty("update.nopermission"));
 					return true;
 				}
 				
