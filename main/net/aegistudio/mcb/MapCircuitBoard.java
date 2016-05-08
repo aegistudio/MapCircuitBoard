@@ -31,6 +31,8 @@ import net.aegistudio.mcb.layout.CommandBlockPlacer;
 import net.aegistudio.mcb.layout.ComponentPlaceListener;
 import net.aegistudio.mcb.layout.ComponentPlacer;
 import net.aegistudio.mcb.layout.SchemeCanvas;
+import net.aegistudio.mcb.mcinject.CraftMinecraftServer;
+import net.aegistudio.mcb.mcinject.MinecraftServer;
 import net.aegistudio.mcb.unit.Button;
 import net.aegistudio.mcb.unit.CommandBlock;
 import net.aegistudio.mcb.unit.Comparator;
@@ -67,8 +69,16 @@ public class MapCircuitBoard extends JavaPlugin {
 	
 	public static final String SOURCE_RAW_URL = "https://raw.githubusercontent.com/aegistudio/MapCircuitBoard/master/";
 	public Properties locale = new Properties();
+	public MinecraftServer server;
 	
 	public void onEnable() {
+		try {
+			this.server = new CraftMinecraftServer(getServer());
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+			this.setEnabled(false);
+		}
 		new Thread(() -> {
 			try {
 				this.locale = new Properties();

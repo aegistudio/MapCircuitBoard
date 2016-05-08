@@ -25,17 +25,26 @@ import net.aegistudio.mcb.MapCircuitBoard;
 import net.aegistudio.mcb.board.CircuitBoardCanvas;
 import net.aegistudio.mcb.board.PropagatePolicy;
 import net.aegistudio.mcb.board.Propagator;
+import net.aegistudio.mcb.mcinject.tileentity.TileEntity;
+import net.aegistudio.mcb.mcinject.world.BlockPosition;
+import net.aegistudio.mcb.mcinject.world.World;
+import net.aegistudio.mcb.reflect.clazz.SamePackageClass;
+import net.aegistudio.mcb.reflect.method.AbstractExecutor;
+import net.aegistudio.mcb.reflect.method.MatchedExecutor;
 
 public class BlockPropagatePolicy implements PropagatePolicy {
 	public final MapCircuitBoard plugin;
+	public AbstractExecutor setComparatorLevel;
 	
 	public BlockPropagatePolicy(MapCircuitBoard circuitBoard) {
 		circuitBoard.getServer().getPluginManager()
 			.registerEvents(new SimplePowerListener(Material.REDSTONE_TORCH_OFF, i -> i != 0, circuitBoard), circuitBoard);
 		circuitBoard.getServer().getPluginManager()
 			.registerEvents(new SimplePowerListener(Material.DIODE_BLOCK_ON, i -> i == 0, circuitBoard), circuitBoard);
-		//circuitBoard.getServer().getPluginManager()
-		//	.registerEvents(new SimplePowerListener(Material.REDSTONE_COMPARATOR_ON, i -> i == 0, circuitBoard), circuitBoard);
+		circuitBoard.getServer().getPluginManager()
+			.registerEvents(new SimplePowerListener(Material.REDSTONE_COMPARATOR_ON, i -> i == 0, circuitBoard), circuitBoard);
+		circuitBoard.getServer().getPluginManager()
+			.registerEvents(new SimplePowerListener(Material.REDSTONE_COMPARATOR_OFF, i -> i == 0, circuitBoard), circuitBoard);
 		
 		circuitBoard.getServer().getPluginManager()
 			.registerEvents(new LampPowerListener(circuitBoard), circuitBoard);
@@ -45,6 +54,14 @@ public class BlockPropagatePolicy implements PropagatePolicy {
 			.registerEvents(new SimplePowerListener(Material.REDSTONE_WIRE, i -> true, circuitBoard), circuitBoard);
 		
 		this.plugin = circuitBoard;
+		
+		try {
+			SamePackageClass comparatorClazz = new SamePackageClass(plugin.server.getMinecraftServerClass(), "TileEntityComparator");
+			this.setComparatorLevel = new MatchedExecutor(comparatorClazz.method(), int.class);
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
 	@Override
@@ -83,6 +100,7 @@ public class BlockPropagatePolicy implements PropagatePolicy {
 		
 		Function<Integer, Material> redstoneOnOff = null;
 		Function<Integer, Integer> shouldPower = null;		// Used only in comparator, repeater and torch.
+		Runnable cleanUpWork = null;
 		
 		switch(block.getType()) {
 			case REDSTONE_WIRE:
@@ -92,12 +110,11 @@ public class BlockPropagatePolicy implements PropagatePolicy {
 			
 			case REDSTONE_COMPARATOR_OFF:
 			case REDSTONE_COMPARATOR_ON:
-				/*
-				BlockState comparatorState = block.getState();
-				Comparator comparator = (Comparator) comparatorState.getData();
-				System.out.println(comparator.getFacing());
-				BlockFace face = block.getFace(from.getBlock());
-				*/
+				// Seem fails to work.
+				World world = new World(plugin.server, block.getWorld());
+				TileEntity<?> tileEntity = world.getTileEntity(new BlockPosition(plugin.server, block.getLocation()), null);
+				setComparatorLevel.invoke(tileEntity.thiz, power);
+				block.setMetadata(REDSTONE_STATE, new FixedMetadataValue(plugin, power));
 			break;
 					
 			case DIODE_BLOCK_OFF:
@@ -108,7 +125,11 @@ public class BlockPropagatePolicy implements PropagatePolicy {
 							Material.DIODE_BLOCK_OFF;
 				if(shouldPower == null)
 					shouldPower = p -> p > 0? 15 : 0;
-					
+				Location location = block.getLocation();
+				BlockFace diodeFace = BlockFace.values()[location.getBlock().getData()];
+				Block wireToNotify = location.getBlock().getRelative(diodeFace);
+				cleanUpWork = () -> wireToNotify.getState().update(true, true);
+				
 			case REDSTONE_TORCH_ON:
 			case REDSTONE_TORCH_OFF:
 				if(redstoneOnOff == null)
@@ -221,5 +242,9 @@ public class BlockPropagatePolicy implements PropagatePolicy {
 				offset.accept(BlockFace.SOUTH, block.getLocation());
 			}
 		}
+		
+		if(cleanUpWork != null) 
+			cleanUpWork.run();
+			//plugin.getServer().getScheduler().runTask(plugin, cleanUpWork);
 	}
 }

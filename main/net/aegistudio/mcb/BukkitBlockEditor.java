@@ -8,8 +8,6 @@ import org.bukkit.command.CommandMap;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.ItemFrame;
 
-import net.aegistudio.mcb.mcinject.CraftMinecraftServer;
-import net.aegistudio.mcb.mcinject.MinecraftServer;
 import net.aegistudio.mcb.mcinject.tileentity.TileEntityCommand;
 import net.aegistudio.mcb.mcinject.world.BlockPosition;
 import net.aegistudio.mcb.mcinject.world.World;
@@ -27,24 +25,25 @@ public class BukkitBlockEditor implements CommandBlockEditor {
 	private final MapCircuitBoard plugin;
 	public CommandHandle<MapCircuitBoard> infoHandle;
 	public CommandMap commandMap;
-	public final MinecraftServer server;
 	public final AbstractExecutor proxiedNativeCommandSender;
+	public final VanillaExecutorProxy vanillaProxy;
 	
 	public BukkitBlockEditor(MapCircuitBoard plugin) {
 		this.plugin = plugin;
 		this.selected = new TreeMap<String, Pair>();
 		
 		try {
-			this.server = new CraftMinecraftServer(plugin.getServer());
-			commandMap = (CommandMap)new NamedExecutor(this.server.getBukkitServerClass().method(), 
+			commandMap = (CommandMap)new NamedExecutor(plugin.server.getBukkitServerClass().method(), 
 					"getCommandMap").invoke(this.plugin.getServer());
 			net.aegistudio.mcb.reflect.clazz.Class proxiedNativeCommandSender = 
-					new SamePackageClass(server.getBukkitServerClass(), "command.ProxiedNativeCommandSender");
+					new SamePackageClass(plugin.server.getBukkitServerClass(), "command.ProxiedNativeCommandSender");
 			this.proxiedNativeCommandSender = new LengthedExecutor(proxiedNativeCommandSender.constructor(), 3);
 		}
 		catch(Exception e) {
 			throw new RuntimeException(e);
 		}
+
+		this.vanillaProxy = new VanillaExecutorProxy(plugin.server);
 	}
 	
 	@Override
@@ -75,21 +74,21 @@ public class BukkitBlockEditor implements CommandBlockEditor {
 	}
 	
 	HashMap<CommandBlockData, Proxier> proxier = new HashMap<CommandBlockData, Proxier>();
-	public CommandSender retrieve(ItemFrame frame, CommandBlockData data) {
+	public Proxier retrieve(ItemFrame frame, CommandBlockData data) {
 		Proxier result = proxier.get(data);
-		if(result != null && result.data == data) return result.sender;
+		if(result != null && result.data == data) return result;
 		Proxier value = new Proxier();
 		
-		value.command = new TileEntityCommand(server);
-		value.command.setWorld(new World(server, frame.getWorld()));
-		value.command.setPosition(new BlockPosition(server, frame.getLocation()));
+		value.command = new TileEntityCommand(plugin.server);
+		value.command.setWorld(new World(plugin.server, frame.getWorld()));
+		value.command.setPosition(new BlockPosition(plugin.server, frame.getLocation()));
 		
 		CommandSender sender = (CommandSender)proxiedNativeCommandSender
 				.invoke(null, value.command.getCommandBlock().thiz, data, data);
 
 		value.data = data;	value.sender = sender;
 		proxier.put(data, value);
-		return sender;
+		return value;
 	}
 	
 	@Override
@@ -106,8 +105,19 @@ public class BukkitBlockEditor implements CommandBlockEditor {
 			data.translated = data.translated.substring(1);
 		
 		// run task.
-		Runnable task = () -> data.lastOutputState = plugin.getServer()
-				.dispatchCommand(retrieve(frame, data), data.translated);
+		Runnable task = () -> {
+			Proxier proxy = retrieve(frame, data);
+			//plugin.getServer().dispatchCommand(retrieve(frame, data)
+			//		.sender, data.translated);
+			
+			String[] splitted = data.translated.split(" ");
+			String[] trimmed = new String[splitted.length - 1];
+			System.arraycopy(splitted, 1, trimmed, 0, trimmed.length);
+			int successfulCount = vanillaProxy.executeSuccess(this.commandMap.getCommand(splitted[0]), 
+					proxy.sender, splitted[0], trimmed);
+			data.lastOutputState = successfulCount > 0;
+		};
+
 		
 		// filter asynchronous command.
 		if(data.translated.startsWith("summon"))
@@ -182,7 +192,6 @@ public class BukkitBlockEditor implements CommandBlockEditor {
 				pair.data.command = new String(builder);
 				pair.cell.setData(pair.data);
 				pair.data.lastEdited = arg2.getName();
-				pair.data.lastOutputState = false;
 				pair.data.translated = "";
 				if(pair.cell.getGrid() instanceof AbstractGrid)
 					((AbstractGrid)pair.cell.getGrid()).update(pair.cell.getRow(), 
