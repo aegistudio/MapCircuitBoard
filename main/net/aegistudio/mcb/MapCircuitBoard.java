@@ -205,18 +205,15 @@ public class MapCircuitBoard extends JavaPlugin {
 
 				public @Override String description() {	return locale.getProperty("integrated.description");	}
 
-				@Override
-				public boolean handle(MapCircuitBoard arg0, CommandSender arg1, String[] arg2, IntegratedCanvas arg3) {
+				public @Override boolean handle(MapCircuitBoard arg0, CommandSender arg1, 
+						String[] arg2, IntegratedCanvas arg3) {
 					if(arg1.hasPermission("mcb.integrated"))
 						return true;
 					arg1.sendMessage(locale.getProperty("integrated.nopermission"));
 					return false;
 				}
 
-				@Override
-				public String paramList() {
-					return "";
-				}
+				public @Override String paramList() {	return "";	}
 			});
 			
 			editor.registerCommands(commandService);

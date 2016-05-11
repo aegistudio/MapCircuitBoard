@@ -5,6 +5,8 @@ import java.io.DataOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import org.bukkit.Location;
+
 import net.aegistudio.mcb.MapCircuitBoard;
 import net.aegistudio.mcb.layout.SchemeCanvas;
 import net.aegistudio.mpp.Interaction;
@@ -55,5 +57,13 @@ public class IntegratedCanvas extends AbstractCircuitBoard implements PlaceSensi
 			super.grid.remove();
 			super.grid = null;
 		}
+	}
+	
+	public void refer(Location location) {
+		if(super.frame != null) {
+			super.frame.remove();
+			super.frame = null;
+		}
+		super.refer(location);
 	}
 }
