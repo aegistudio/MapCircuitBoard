@@ -23,6 +23,7 @@ import org.mcstats.Metrics;
 
 import net.aegistudio.mcb.board.CircuitBoardCanvas;
 import net.aegistudio.mcb.board.CircuitBoardItem;
+import net.aegistudio.mcb.board.IntegratedCanvas;
 import net.aegistudio.mcb.board.PropagateManager;
 import net.aegistudio.mcb.clock.Asynchronous;
 import net.aegistudio.mcb.clock.Clocking;
@@ -150,8 +151,8 @@ public class MapCircuitBoard extends JavaPlugin {
 			
 			schemes = new TreeMap<Integer, PluginCanvasRegistry<SchemeCanvas>>();
 			canvasService.register(this, "scheme", (context) -> new SchemeCanvas(this, context));
-			
 			canvasService.register(this, "redstone", (context) -> new CircuitBoardCanvas(this, context));
+			canvasService.register(this, "integrated", (context) -> new IntegratedCanvas(this, context));
 		}
 		catch(Throwable t) {
 			t.printStackTrace();
@@ -197,6 +198,25 @@ public class MapCircuitBoard extends JavaPlugin {
 				}
 				
 				public @Override String paramList() {	return "";	}
+			});
+			
+			commandService.registerCreate(this, "create/integrated", "integrated", 
+					new CanvasCommandHandle<MapCircuitBoard, IntegratedCanvas>() {
+
+				@Override
+				public String description() {
+					return "Create both a scheme and circuit board.";
+				}
+
+				@Override
+				public boolean handle(MapCircuitBoard arg0, CommandSender arg1, String[] arg2, IntegratedCanvas arg3) {
+					return true;
+				}
+
+				@Override
+				public String paramList() {
+					return "";
+				}
 			});
 			
 			editor.registerCommands(commandService);
@@ -294,7 +314,7 @@ public class MapCircuitBoard extends JavaPlugin {
 	public Clocking clocking;
 	
 	public void clock() {
-		forCircuitBoards(redstone -> {if(redstone.frame == null) redstone.whereami();});
+		forCircuitBoards(redstone -> {if(redstone.getFrame() == null) redstone.whereami();});
 		for(int i = 0; i < internalTick; i ++) {
 			forCircuitBoards(redstone -> redstone.propagateIn());
 			forCircuitBoards(redstone -> redstone.clockTick());
@@ -302,28 +322,33 @@ public class MapCircuitBoard extends JavaPlugin {
 		}
 	}
 	
-	public void forCircuitBoards(Consumer<CircuitBoardCanvas> todo) {
+	public void forCircuitBoards(Consumer<TickableBoard> todo) {
 		Deque<WorkingThread> workingThreadQueue = new LinkedList<WorkingThread>();
-		for(PluginCanvasRegistry<CircuitBoardCanvas> redstone : 
-			canvasService.getPluginCanvases(this, "redstone", CircuitBoardCanvas.class)) {
-				WorkingThread thread = new WorkingThread(todo, redstone.canvas());
-				workingThreadQueue.addFirst(thread);
-				thread.start();
-		}
+		Consumer<TickableBoard> boardConsumer = (board) -> {
+			WorkingThread thread = new WorkingThread(todo, board);
+			workingThreadQueue.addFirst(thread);
+			thread.start();
+		};
+		
+		canvasService.getPluginCanvases(this, "redstone", CircuitBoardCanvas.class)
+			.forEach(registry -> boardConsumer.accept(registry.canvas()));
+		canvasService.getPluginCanvases(this, "integrated", IntegratedCanvas.class)
+			.forEach(registry -> boardConsumer.accept(registry.canvas()));
+			
 		for(WorkingThread thread : workingThreadQueue)
 			try { thread.join(); } catch(Exception e) {	e.printStackTrace(); }
 	}
 	
 	class WorkingThread extends Thread{
-		private final Consumer<CircuitBoardCanvas> consumer;
-		private final CircuitBoardCanvas canvas;
-		public WorkingThread(Consumer<CircuitBoardCanvas> consumer, CircuitBoardCanvas canvas) {
+		private final Consumer<TickableBoard> consumer;
+		private final TickableBoard canvas;
+		public WorkingThread(Consumer<TickableBoard> consumer, TickableBoard canvas) {
 			this.consumer = consumer;
 			this.canvas = canvas;
 		}
 		
-		public void run() {
-			try {	this.consumer.accept(canvas);	} catch(Throwable t) { }
+		public void run() {	
+			try {	this.consumer.accept(canvas);	} catch(Throwable t) {			}
 		}
 	}
 }

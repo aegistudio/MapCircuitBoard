@@ -56,6 +56,7 @@ public class SchemeCanvas implements PluginCanvas {
 	}
 
 	public void repaint() {
+		if(context == null) return;
 		context.color(null);
 		context.clear();
 		this.scheme.paint(context);

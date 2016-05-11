@@ -22,7 +22,7 @@ import org.bukkit.metadata.FixedMetadataValue;
 
 import net.aegistudio.mcb.Facing;
 import net.aegistudio.mcb.MapCircuitBoard;
-import net.aegistudio.mcb.board.CircuitBoardCanvas;
+import net.aegistudio.mcb.TickableBoard;
 import net.aegistudio.mcb.board.PropagatePolicy;
 import net.aegistudio.mcb.board.Propagator;
 import net.aegistudio.mcb.mcinject.tileentity.TileEntity;
@@ -65,25 +65,25 @@ public class BlockPropagatePolicy implements PropagatePolicy {
 	}
 	
 	@Override
-	public boolean in(Location location, Facing side, CircuitBoardCanvas canvas, ItemFrame frame) {
+	public boolean in(Location location, Facing side, TickableBoard canvas, ItemFrame frame) {
 		Block block = location.getBlock();
 		if(block.getType() == Material.AIR) return false;
 		
 		int power = block.getBlockPower();
 		Propagator propagate = new Propagator();
 		propagate.setVoltage(2 * power);
-		propagate.propagateVoltage(canvas.grid, side);
+		propagate.propagateVoltage(canvas.getGrid(), side);
 		return true;
 	}
 
 	@Override
-	public boolean out(Location location, Facing face, CircuitBoardCanvas canvas, ItemFrame frame) {
+	public boolean out(Location location, Facing face, TickableBoard canvas, ItemFrame frame) {
 		Block block = location.getBlock();
 		if(block.getType() == Material.AIR) return false;
 		
 		Propagator propagate = new Propagator();
 		propagate.setVoltage(-1);
-		propagate.retrieveVoltage(canvas.grid, face);
+		propagate.retrieveVoltage(canvas.getGrid(), face);
 		if(propagate.getVoltage() < 0) return true;
 		
 		int newVoltage = propagate.getVoltage() / 2;
