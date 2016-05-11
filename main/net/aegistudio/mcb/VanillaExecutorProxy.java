@@ -27,6 +27,7 @@ public class VanillaExecutorProxy {
 	}
 	
 	public int executeSuccess(Command command, CommandSender sender, String commandLabel, String[] args) {
+		if(command == null) return 0;
     	if(!command.testPermission(sender)) return 0;
     	
     	if(command instanceof VanillaCommand && !(command instanceof HelpCommand)) {

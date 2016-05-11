@@ -203,14 +203,14 @@ public class MapCircuitBoard extends JavaPlugin {
 			commandService.registerCreate(this, "create/integrated", "integrated", 
 					new CanvasCommandHandle<MapCircuitBoard, IntegratedCanvas>() {
 
-				@Override
-				public String description() {
-					return "Create both a scheme and circuit board.";
-				}
+				public @Override String description() {	return locale.getProperty("integrated.description");	}
 
 				@Override
 				public boolean handle(MapCircuitBoard arg0, CommandSender arg1, String[] arg2, IntegratedCanvas arg3) {
-					return true;
+					if(arg1.hasPermission("mcb.integrated"))
+						return true;
+					arg1.sendMessage(locale.getProperty("integrated.nopermission"));
+					return false;
 				}
 
 				@Override
