@@ -1,6 +1,6 @@
 name: MapCircuitBoard
 main: net.aegistudio.mcb.MapCircuitBoard
-version: 1.5
+version: 1.6
 author: aegistudio
 softdepend: [MapPainting]
 permissions:
