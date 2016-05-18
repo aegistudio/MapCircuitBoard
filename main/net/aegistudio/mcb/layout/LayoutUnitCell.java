@@ -8,7 +8,7 @@ public class LayoutUnitCell extends AbstractCell<LayoutGrid, Unit>{
 
 	protected LayoutUnitCell(LayoutGrid grid, Unit component, int row, int column) {
 		super(grid, row, column);
-		super.setComponent(component);
+		super.component = component;
 	}
 	
 	public <T extends Data> void setData(T data) {
