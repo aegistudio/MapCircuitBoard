@@ -19,6 +19,7 @@ import org.bukkit.event.block.BlockPistonExtendEvent;
 import org.bukkit.event.block.BlockPistonRetractEvent;
 import org.bukkit.material.PistonBaseMaterial;
 import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.metadata.MetadataValue;
 
 import net.aegistudio.mcb.Facing;
 import net.aegistudio.mcb.MapCircuitBoard;
@@ -26,6 +27,7 @@ import net.aegistudio.mcb.TickableBoard;
 import net.aegistudio.mcb.board.PropagatePolicy;
 import net.aegistudio.mcb.board.Propagator;
 import net.aegistudio.mcb.mcinject.tileentity.TileEntity;
+import net.aegistudio.mcb.mcinject.tileentity.TileEntityCommand;
 import net.aegistudio.mcb.mcinject.world.BlockPosition;
 import net.aegistudio.mcb.mcinject.world.World;
 import net.aegistudio.mcb.reflect.clazz.SamePackageClass;
@@ -156,6 +158,24 @@ public class BlockPropagatePolicy implements PropagatePolicy {
 			case IRON_DOOR:
 				byte data = block.getData();
 				block.setData((byte) ((data & 0x03) | (power != 0? 4 : 0)));
+			break;
+			
+			case COMMAND:
+				int previousPower = 0;
+				for(MetadataValue value : block.getMetadata(REDSTONE_STATE))
+					if(value.getOwningPlugin() == plugin)
+						previousPower = value.asInt();
+				
+				if(previousPower == 0 && power > 0) {
+					final World commandWorld = new World(this.plugin.server, block.getWorld());
+					final TileEntityCommand commandTileEntity = (TileEntityCommand) commandWorld.getTileEntity(
+							new BlockPosition(this.plugin.server, block.getLocation()),
+							this.plugin.server.getTileEntityManager().tileEntityCommand.getClazz());
+					plugin.getServer().getScheduler().runTask(plugin, () ->
+						commandTileEntity.getCommandBlock().execute(commandWorld));
+				}
+				
+				block.setMetadata(REDSTONE_STATE, new FixedMetadataValue(plugin, power));
 			break;
 			
 			case DROPPER:
